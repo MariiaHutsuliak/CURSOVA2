@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">Інформаційна система книжкового магазину</h1>
+            <p class="lead">Система для управління магазином самообслуговування, який займається продажем книжок та іншої друкованої продукції.</p>
+            <hr class="my-4">
+            <p>Варіант 24. Система включає управління співробітниками, постачальниками, договорами, продукцією та продажами.</p>
+
+            {% if not current_user.is_authenticated %}
+            <div class="mt-3">
+                <a href="{{ url_for('register_request') }}" class="btn btn-light btn-lg me-2">
+                    <i class="fas fa-user-plus"></i> Подати заявку на доступ
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Увійти в систему
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-users"></i> Управління персоналом
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Співробітники</h5>
+                <p class="card-text">Управління інформацією про співробітників, їх посади, відділи та графіки роботи.</p>
+                <a href="{{ url_for('employees') }}" class="btn btn-primary">Переглянути</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-truck"></i> Постачання
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Постачальники та договори</h5>
+                <p class="card-text">Облік постачальників, договорів на постачання та поставок продукції.</p>
+                <a href="{{ url_for('suppliers') }}" class="btn btn-primary">Переглянути</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-dolly"></i> Поставки
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Облік поставок</h5>
+                <p class="card-text">Управління поставками товарів за договорами: реєстрація партій,
+                контроль кількості та вартості.</p>
+                {% if current_user.is_authorized_user() %}
+                <a href="{{ url_for('deliveries') }}" class="btn btn-primary">Переглянути</a>
+                {% else %}
+                <span class="text-muted">Недостатньо прав доступу</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+<div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-book-open"></i> Товари
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Продукція</h5>
+                    <p class="card-text">Каталог книжок, газет, журналів, календарів та настільних ігор.</p>
+                    <a href="{{ url_for('products') }}" class="btn btn-primary">Переглянути</a>
+                </div>
+            </div>
+        </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-cash-register"></i> Продажі
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Облік продажів</h5>
+                <p class="card-text">Реєстрація та аналіз продажів продукції по відділах та співробітниках.</p>
+                {% if current_user.is_authorized_user() %}
+                <a href="{{ url_for('sales') }}" class="btn btn-primary">Переглянути</a>
+                {% else %}
+                <span class="text-muted">Недостатньо прав доступу</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i> Аналітика
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Звіти та запити</h5>
+                <p class="card-text">10 спеціалізованих запитів для аналізу роботи магазину та ефективності продажів.</p>
+                {% if current_user.can_run_queries() %}
+                <a href="{{ url_for('reports') }}" class="btn btn-primary">Переглянути</a>
+                {% else %}
+                <span class="text-muted">Недостатньо прав доступу</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_administrator() %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card h-100 border-warning">
+            <div class="card-header bg-warning">
+                <i class="fas fa-user-cog"></i> Адміністрування
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Управління користувачами</h5>
+                <p class="card-text">Створення операторів та обробка заявок на реєстрацію.</p>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-warning">Переглянути</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="row g-4">
+
+    <div class="col-md-6 d-flex flex-column gap-4">
+
+        <div class="card flex-fill">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-eye"></i> Гостьовий доступ</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Як гість ви можете переглянути каталог нашої продукції:</p>
+                <a href="{{ url_for('products') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-book-open"></i> Переглянути каталог товарів
+                </a>
+            </div>
+        </div>
+
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user-plus"></i> Отримати доступ</h5>
+            </div>
+            <div class="card-body">
+                <p>Для отримання доступу до системи потрібно:</p>
+                <ol>
+                    <li>Заповнити форму заявки на реєстрацію</li>
+                    <li>Дочекатися схвалення адміністратором</li>
+                </ol>
+
+                <a href="{{ url_for('register_request') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-paper-plane"></i> Подати заявку
+                </a>
+
+                <hr class="my-4">
+
+                <p class="mb-0">Вже маєте обліковий запис?</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Увійти в систему
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Інформація про систему</h5>
+            </div>
+            <div class="card-body">
+                <h6>Функціональність системи:</h6>
+                <ul>
+                    <li>Облік співробітників з можливістю роботи в різних відділах</li>
+                    <li>Управління постачальниками та договорами на постачання</li>
+                    <li>Каталогізація продукції за категоріями</li>
+                    <li>Реєстрація продажів з прив'язкою до співробітників</li>
+                    <li>Аналітичні звіти за різними критеріями</li>
+                    <li>Розрахунок виторгу та ефективності роботи</li>
+                </ul>
+
+                <h6 class="mt-4">Рівні доступу:</h6>
+                <div class="alert alert-success">
+                    <strong>Гість:</strong> Перегляд каталогу продукції та відправка заявки на реєстрацію
+                </div>
+                <div class="alert alert-info">
+                    <strong>Авторизований користувач:</strong> Доступ до пошуку даних та вбудованих запитів
+                </div>
+                <div class="alert alert-warning">
+                    <strong>Оператор:</strong> Повний доступ до CRUD операцій та формування нових запитів
+                </div>
+                <div class="alert alert-danger">
+                    <strong>Адміністратор:</strong> Повний доступ плюс управління користувачами та заявками
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endif %}
+
+{% if current_user.is_authenticated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5><i class="fas fa-info-circle"></i> Функціональність системи</h5>
+            <ul class="mb-0">
+                <li>Облік співробітників з можливістю роботи в різних відділах</li>
+                <li>Управління постачальниками та договорами на постачання</li>
+                <li>Каталогізація продукції за категоріями</li>
+                <li>Реєстрація продажів з прив'язкою до співробітників</li>
+                <li>Аналітичні звіти за різними критеріями</li>
+                <li>Розрахунок виторгу та ефективності роботи</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

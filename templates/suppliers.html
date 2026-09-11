@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Постачальники - Книжковий магазин{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-truck"></i>Постачальники</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Список постачальників</h4>
+                {% if current_user.is_operator() or current_user.is_administrator() %}
+                <a href="{{ url_for('add_supplier') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle"></i> Додати постачальника
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Назва</th>
+                                <th>Контактна особа</th>
+                                <th>Телефон</th>
+                                <th>Email</th>
+                                <th>Адреса</th>
+                                <th>Кількість договорів</th>
+                                {% if current_user.role in ['administrator', 'operator'] %}
+                                    <th>Дії</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supplier in suppliers %}
+                            <tr>
+                                <td>{{ supplier.id }}</td>
+                                <td>{{ supplier.name }}</td>
+                                <td>{{ supplier.contact_person or '-' }}</td>
+                                <td>{{ supplier.phone or '-' }}</td>
+                                <td>{{ supplier.email or '-' }}</td>
+                                <td>{{ supplier.address or '-' }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ supplier.contracts | rejectattr('is_deleted', 'equalto', True) | list | length }}</span>
+                                </td>
+                                {% if current_user.role in ['administrator', 'operator'] %}
+                                <td class="d-flex gap-2">
+                                        <a href="{{ url_for('edit_supplier', supplier_id=supplier.id) }}"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                       {% set active_contract = supplier.contracts
+                                            | rejectattr('is_deleted', 'equalto', True)
+                                            | selectattr('start_date', '<=', today)
+                                            | selectattr('end_date', '>=', today)
+                                            | list
+                                            | length > 0
+                                       %}
+
+                                        <a href="{{ url_for('delete_supplier', supplier_id=supplier.id) }}"
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Ви впевнені, що хочете видалити цього постачальника?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Активні договори</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Номер договору</th>
+                                <th>Постачальник</th>
+                                <th>Дата початку</th>
+                                <th>Дата закінчення</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supplier in suppliers %}
+                                {% for contract in supplier.contracts|rejectattr('is_deleted', 'equalto', True) %}
+                                <tr>
+                                    <td>{{ contract.contract_number }}</td>
+                                    <td>{{ supplier.name }}</td>
+                                    <td>{{ contract.start_date.strftime('%d.%m.%Y') }}</td>
+                                    <td>{{ contract.end_date.strftime('%d.%m.%Y') }}</td>
+                                    <td>
+                                        {% if contract.end_date < today %}
+                                            <span class="badge bg-danger">Закінчився</span>
+                                        {% elif contract.start_date <= today <= contract.end_date %}
+                                            <span class="badge bg-success">Активний</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Майбутній</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

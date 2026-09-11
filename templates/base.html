@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Інформаційна система книжкового магазину{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {{ moment.include_moment() }}
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .query-card {
+            margin-bottom: 20px;
+        }
+        .result-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .table-responsive {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-book"></i> Книжковий магазин
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-home"></i> Головна
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('products') }}">
+                            <i class="fas fa-book-open"></i> Продукція
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('employees') }}">
+                            <i class="fas fa-users"></i> Співробітники
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('suppliers') }}">
+                            <i class="fas fa-truck"></i> Постачальники
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('deliveries') }}">
+                            <i class="fas fa-dolly"></i> Поставки
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('sales') }}">
+                            <i class="fas fa-cash-register"></i> Продажі
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('reports') }}">
+                            <i class="fas fa-chart-bar"></i> Звіти
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i>
+                                {% if current_user.role == 'administrator' %}
+                                    <span class="badge bg-warning ms-1">Адмін</span>
+                                {% elif current_user.role == 'operator' %}
+                                    <span class="badge bg-warning ms-1">Оператор</span>
+                                {% elif current_user.role == 'authorized_user' %}
+                                    <span class="badge bg-info ms-1">Авторизований</span>
+                                {% endif %}
+                                {{ current_user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if current_user.role == 'administrator' %}
+                                 <li><a class="dropdown-item" href="{{ url_for('admin_users') }}">
+                                <i class="fas fa-users-cog"></i> Користувачі
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('user_requests') }}">
+                                    <i class="fas fa-user-check"></i> Заявки
+                                </a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Вийти
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Увійти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register_request') }}">
+                                <i class="fas fa-user-plus"></i> Реєстрація
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    <footer class="bg-light text-center text-muted py-3 mt-5">
+        <div class="container">
+            <p>&copy; 2025 Інформаційна система книжкового магазину. Варіант 24.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

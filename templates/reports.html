@@ -1,0 +1,663 @@
+{% extends "base.html" %}
+
+{% block title %}Звіти та запити - Книжковий магазин{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">
+        <i class="fas fa-chart-bar"></i> Звіти та аналітичні запити
+    </h1>
+
+    <a href="{{ url_for('my_history') }}" class="btn btn-primary">
+        <i class="fas fa-history"></i> Мої запити
+    </a>
+</div>
+
+<div class="row">
+    {% if current_user.is_administrator() or current_user.is_operator() %}
+    <div class="col-12 mb-4">
+        <div class="card query-card border-warning">
+            <div class="card-header bg-warning text-white">
+                <i class="fas fa-database"></i> Кастомний SQL-запит (тільки для адміна / оператора)
+            </div>
+            <div class="card-body">
+                <form id="custom-sql-form">
+                    <div class="mb-3">
+                        <label class="form-label">SQL-запит:</label>
+                        <textarea id="custom-sql" class="form-control" rows="4"
+                                  placeholder="SELECT * FROM employees;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning">Виконати SQL</button>
+                </form>
+                <div id="custom-sql-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-users"></i> Запит 1: Інформація про співробітників
+            </div>
+            <div class="card-body">
+                <form id="query1-form">
+                    <div class="mb-3">
+                        <label for="q1-department" class="form-label">Відділ (необов'язково):</label>
+                        <input type="text" class="form-control" id="q1-department" placeholder="Назва відділу">
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="q1-managers">
+                        <label class="form-check-label" for="q1-managers">Тільки керівники</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="q1-vacation">
+                        <label class="form-check-label" for="q1-vacation">Тільки у відпустці</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query1-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-money-bill-wave"></i> Запит 2: Аналіз виторгу
+            </div>
+            <div class="card-body">
+                <form id="query2-form">
+                    <div class="mb-3">
+                        <label for="q2-start-date" class="form-label">Дата початку:</label>
+                        <input type="date" class="form-control" id="q2-start-date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="q2-end-date" class="form-label">Дата кінця:</label>
+                        <input type="date" class="form-control" id="q2-end-date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="q2-category" class="form-label">Категорія (необов'язково):</label>
+                        <input type="text" class="form-control" id="q2-category" placeholder="Назва категорії">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query2-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-file-contract"></i> Запит 3: Договори за періодом
+            </div>
+            <div class="card-body">
+                <form id="query3-form">
+                    <div class="mb-3">
+                        <label for="q3-period" class="form-label">Період:</label>
+                        <select class="form-select" id="q3-period">
+                            <option value="week">Тиждень</option>
+                            <option value="month" selected>Місяць</option>
+                            <option value="quarter">Квартал</option>
+                            <option value="year">Рік</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query3-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-puzzle-piece"></i> Запит 4: Постачальники без настільних ігор
+            </div>
+            <div class="card-body">
+                <button id="query4-btn" class="btn btn-primary">Виконати запит</button>
+                <div id="query4-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-trophy"></i> Запит 5: Продажі продавців
+            </div>
+            <div class="card-body">
+                <form id="query5-form">
+                    <div class="mb-3">
+                        <label for="q5-min-amount" class="form-label">Мінімальна сума (грн):</label>
+                        <input type="number" class="form-control" id="q5-min-amount" value="200" min="200" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label for="q5-period" class="form-label">Період:</label>
+                        <select class="form-select" id="q5-period">
+                            <option value="day" selected>День</option>
+                            <option value="week">Тиждень</option>
+                            <option value="month">Місяць</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="q5-target-date" class="form-label">Дата:</label>
+                        <input type="date" class="form-control" id="q5-target-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query5-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-shopping-cart"></i> Запит 6: Інформація про продажі
+            </div>
+            <div class="card-body">
+            <form id="query6-form">
+
+                <div class="mb-3">
+                    <label for="q6-target-date" class="form-label">Конкретна дата:</label>
+                    <input type="date" class="form-control" id="q6-target-date">
+                </div>
+
+                <div class="mb-3">
+                    <label for="q6-month" class="form-label">Або місяць (1–12):</label>
+                    <input type="number" class="form-control" id="q6-month" min="1" max="12">
+                </div>
+
+                <div class="mb-3">
+                    <label for="q6-category" class="form-label">Категорія (необов'язково):</label>
+                    <input type="text" class="form-control" id="q6-category" placeholder="Наприклад: Детективи">
+                </div>
+
+                <div class="mb-3">
+                    <label for="q6-supplier" class="form-label">Постачальник (необов'язково):</label>
+                    <input type="text" class="form-control" id="q6-supplier" placeholder="Назва постачальника">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Виконати запит</button>
+            </form>
+                <div id="query6-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-calendar-day"></i> Запит 7: Співробітники за день
+            </div>
+            <div class="card-body">
+                <form id="query7-form">
+                    <div class="mb-3">
+                        <label for="q7-target-date" class="form-label">Дата:</label>
+                        <input type="date" class="form-control" id="q7-target-date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="q7-department" class="form-label">Відділ (необов'язково):</label>
+                        <input type="text" class="form-control" id="q7-department" placeholder="Назва відділу">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query7-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-search"></i> Запит 8: Постачальник за договором
+            </div>
+            <div class="card-body">
+                <form id="query8-form">
+                    <div class="mb-3">
+                        <label for="q8-contract-number" class="form-label">Номер договору:</label>
+                        <input type="text" class="form-control" id="q8-contract-number" placeholder="DOG-2023-001" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query8-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-calculator"></i> Запит 9: Вартість від постачальника
+            </div>
+            <div class="card-body">
+                <form id="query9-form">
+                    <div class="mb-3">
+                        <label for="q9-supplier-name" class="form-label">Назва постачальника:</label>
+                        <input type="text" class="form-control" id="q9-supplier-name" placeholder="Назва постачальника" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="q9-target-date" class="form-label">Дата (поточна за замовчуванням):</label>
+                        <input type="date" class="form-control" id="q9-target-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query9-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card query-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i> Запит 10: Продажі за останній тиждень
+            </div>
+            <div class="card-body">
+                <form id="query10-form">
+                    <div class="mb-3">
+                        <label for="q10-date" class="form-label">Кінцева дата (необов'язково):</label>
+                        <input type="date" class="form-control" id="q10-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Виконати запит</button>
+                </form>
+                <div id="query10-result" class="result-container mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% if current_user.is_authenticated and not current_user.is_operator() %}
+<style>
+    .query-card:nth-child(n+3):not(:nth-child(4)):not(:nth-child(5)):not(:nth-child(6)):not(:nth-child(7)):not(:nth-child(8)):not(:nth-child(9)):not(:nth-child(10)) {
+        display: none !important;
+    }
+</style>
+{% endif %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    const today = new Date().toISOString().split('T')[0];
+    $('input[type="date"]').val(today);
+
+    $('#query1-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            department: $('#q1-department').val(),
+            managers_only: $('#q1-managers').is(':checked'),
+            on_vacation_only: $('#q1-vacation').is(':checked')
+        };
+        
+        $.get('/api/query1', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            if (data.length === 0) {
+                html += '<p class="text-muted">Співробітників не знайдено.</p>';
+            } else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped">';
+                html += '<thead><tr><th>ПІБ</th><th>Посада</th><th>Відділ</th><th>Телефон</th><th>У відпустці</th></tr></thead><tbody>';
+                data.forEach(emp => {
+                    html += `<tr>
+                        <td>${emp.full_name}</td>
+                        <td>${emp.position}</td>
+                        <td>${emp.department}</td>
+                        <td>${emp.phone || '-'}</td>
+                        <td>${emp.is_on_vacation ? 'Так' : 'Ні'}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+            }
+            $('#query1-result').html(html);
+        });
+    });
+
+    $('#query2-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            start_date: $('#q2-start-date').val(),
+            end_date: $('#q2-end-date').val(),
+            category: $('#q2-category').val()
+        };
+        
+        $.get('/api/query2', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            html += `<div class="alert alert-success">
+                <strong>Загальний виторг:</strong> ${data.revenue.toFixed(2)} грн<br>
+                <strong>Період:</strong> ${data.period}<br>
+                <strong>Категорія:</strong> ${data.category}
+            </div>`;
+            $('#query2-result').html(html);
+        });
+    });
+
+    $('#query3-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            period: $('#q3-period').val()
+        };
+        
+        $.get('/api/query3', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            if (data.length === 0) {
+                html += '<p class="text-muted">Договорів не знайдено.</p>';
+            } else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped">';
+                html += '<thead><tr><th>Номер</th><th>Постачальник</th><th>Початок</th><th>Кінець</th></tr></thead><tbody>';
+                data.forEach(contract => {
+                    html += `<tr>
+                        <td>${contract.contract_number}</td>
+                        <td>${contract.supplier}</td>
+                        <td>${contract.start_date}</td>
+                        <td>${contract.end_date}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+            }
+            $('#query3-result').html(html);
+        });
+    });
+
+    $('#query4-btn').click(function() {
+        $.get('/api/query4', function(data) {
+            let html = '<h6>Результати:</h6>';
+            if (data.length === 0) {
+                html += '<p class="text-muted">Всі постачальники постачають настільні ігри.</p>';
+            } else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped">';
+                html += '<thead><tr><th>Назва</th><th>Контактна особа</th><th>Телефон</th></tr></thead><tbody>';
+                data.forEach(supplier => {
+                    html += `<tr>
+                        <td>${supplier.name}</td>
+                        <td>${supplier.contact_person || '-'}</td>
+                        <td>${supplier.phone || '-'}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+            }
+            $('#query4-result').html(html);
+        });
+    });
+
+    $('#query5-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            min_amount: $('#q5-min-amount').val(),
+            period: $('#q5-period').val(),
+            target_date: $('#q5-target-date').val()
+        };
+        
+        $.get('/api/query5', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            if (data.length === 0) {
+                html += '<p class="text-muted">Продавців не знайдено.</p>';
+            } else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped">';
+                html += '<thead><tr><th>ПІБ</th><th>Відділ</th><th>Сума продажів</th><th>К-сть продажів</th></tr></thead><tbody>';
+                data.forEach(seller => {
+                    html += `<tr>
+                        <td>${seller.full_name}</td>
+                        <td>${seller.department}</td>
+                        <td>${seller.total_sales.toFixed(2)} грн</td>
+                        <td>${seller.sales_count}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+            }
+            $('#query5-result').html(html);
+        });
+    });
+
+    $('#q6-target-date').on('change', function () {
+        if ($(this).val()) {
+            $('#q6-month').val('');
+        }
+    });
+
+    $('#q6-month').on('input', function () {
+        if ($(this).val()) {
+            $('#q6-target-date').val('');
+        }
+    });
+
+    $('#query6-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            target_date: $('#q6-target-date').val(),
+            month: $('#q6-month').val(),
+            category: $('#q6-category').val(),
+            supplier: $('#q6-supplier').val()
+        };
+
+       $.get('/api/query6', params, function(data) {
+            let filters = data.filters;
+            let sales = data.sales;
+
+            let html = '<h6>Використані фільтри:</h6><ul>';
+
+            if (filters.target_date) html += `<li><strong>Дата:</strong> ${filters.target_date}</li>`;
+            if (filters.month) html += `<li><strong>Місяць:</strong> ${filters.month}</li>`;
+            if (filters.category) html += `<li><strong>Категорія:</strong> ${filters.category}</li>`;
+            if (filters.supplier) html += `<li><strong>Постачальник:</strong> ${filters.supplier}</li>`;
+
+            if (!filters.target_date && !filters.month && !filters.category && !filters.supplier) {
+                html += '<li><em>Без фільтрів (показані всі продажі)</em></li>';
+            }
+
+            html += '</ul><hr>';
+
+            if (sales.length === 0) {
+                html += '<p class="text-muted">Продажів не знайдено.</p>';
+            } else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped">';
+                html += '<thead><tr><th>Дата</th><th>Продавець</th><th>Товар</th><th>К-сть</th><th>Сума</th></tr></thead><tbody>';
+
+                sales.forEach(sale => {
+                    html += `<tr>
+                        <td>${sale.sale_date}</td>
+                        <td>${sale.employee}</td>
+                        <td>${sale.product_name}</td>
+                        <td>${sale.quantity}</td>
+                        <td>${sale.total_price.toFixed(2)} грн</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+            }
+
+            $('#query6-result').html(html);
+        });
+    });
+
+$('#query7-form').submit(function(e) {
+    e.preventDefault();
+
+    const params = {
+        target_date: $('#q7-target-date').val(),
+        department: $('#q7-department').val()
+    };
+
+    $.get('/api/query7', params, function(data) {
+        let html = '<h6>Результати:</h6>';
+
+        html += `
+            <div class="alert alert-info">
+                <strong>Загальна кількість:</strong> ${data.count}<br>
+                <strong>Дата:</strong> ${data.date}<br>
+                <strong>Відділ:</strong> ${data.department}
+            </div>
+        `;
+
+        if (data.employees.length === 0) {
+            html += '<p class="text-muted">Співробітників не знайдено.</p>';
+        } else {
+            html += `
+                <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>ПІБ</th>
+                            <th>Посада</th>
+                            <th>Відділ</th>
+                            <th>Зміна</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.employees.forEach(emp => {
+                html += `
+                    <tr>
+                        <td>${emp.full_name}</td>
+                        <td>${emp.position}</td>
+                        <td>${emp.department}</td>
+                        <td>${emp.shift_start} — ${emp.shift_end}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+        }
+         $('#query7-result').html(html);
+        }).fail(function() {
+            $('#query7-result').html('<div class="alert alert-danger">Помилка при виконанні запиту</div>');
+        });
+    });
+
+    $('#query8-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            contract_number: $('#q8-contract-number').val()
+        };
+        
+        $.get('/api/query8', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            html += `<div class="card">
+                <div class="card-header">Інформація про постачальника</div>
+                <div class="card-body">
+                    <h6>${data.supplier.name}</h6>
+                    <p><strong>Контактна особа:</strong> ${data.supplier.contact_person || '-'}<br>
+                    <strong>Телефон:</strong> ${data.supplier.phone || '-'}<br>
+                    <strong>Email:</strong> ${data.supplier.email || '-'}<br>
+                    <strong>Адреса:</strong> ${data.supplier.address || '-'}</p>
+                    
+                    <strong>Договір ${data.contract.contract_number}</strong>
+                    <p><strong>Період:</strong> ${data.contract.start_date} - ${data.contract.end_date}<br>
+                </div>
+            </div>`;
+            $('#query8-result').html(html);
+        }).fail(function(xhr) {
+            $('#query8-result').html('<div class="alert alert-danger">Договір не знайдено</div>');
+        });
+    });
+
+    $('#query9-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            supplier_name: $('#q9-supplier-name').val(),
+            target_date: $('#q9-target-date').val()
+        };
+        
+        $.get('/api/query9', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+            html += `<div class="alert alert-success">
+                <strong>Постачальник:</strong> ${data.supplier_name}<br>
+                <strong>Загальна вартість продукції:</strong> ${data.total_value.toFixed(2)} грн<br>
+                <strong>На дату:</strong> ${data.date}
+            </div>`;
+            $('#query9-result').html(html);
+        });
+    });
+
+    $('#query10-form').submit(function(e) {
+        e.preventDefault();
+        const params = {
+            from_date: $('#q10-date').val()
+        };
+
+        $.get('/api/query10', params, function(data) {
+            let html = '<h6>Результати:</h6>';
+
+            html += `
+            <div class="alert alert-info">
+                <strong>Загальна сума продажів за тиждень:</strong> ${data.total_sales.toFixed(2)} грн<br>
+                <strong>Період:</strong> ${data.start_date} — ${data.end_date}
+            </div>`;
+
+            if (data.by_category.length === 0) {
+                html += '<p class="text-muted">Немає продажів за цей період.</p>';
+            } else {
+                html += `
+                <h6>За видами продукції:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Категорія</th><th>Сума продажів</th></tr>
+                        </thead>
+                        <tbody>`;
+
+                data.by_category.forEach(cat => {
+                    html += `
+                        <tr>
+                            <td>${cat.category}</td>
+                            <td>${cat.sales.toFixed(2)} грн</td>
+                        </tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+            }
+
+            $('#query10-result').html(html);
+        }).fail(function(xhr) {
+            $('#query10-result').html('<div class="alert alert-danger">Помилка при виконанні запиту</div>');
+        });
+    });
+
+    $('#custom-sql-form').submit(function (e) {
+        e.preventDefault();
+
+        const sql = $('#custom-sql').val().trim();
+        if (!sql) {
+            $('#custom-sql-result').html('<div class="alert alert-warning">Введіть SQL-запит</div>');
+            return;
+        }
+
+        $.post('/api/custom-sql', { sql: sql }, function (data) {
+            let html = '<h6>Результат:</h6>';
+
+            if (data.error) {
+                html += `<div class="alert alert-danger">${data.error}</div>`;
+            }
+            else if (data.rows.length === 0) {
+                html += '<p class="text-muted">Пустий результат.</p>';
+            }
+            else {
+                html += '<div class="table-responsive"><table class="table table-sm table-striped"><thead><tr>';
+
+                Object.keys(data.rows[0]).forEach(col => {
+                    html += `<th>${col}</th>`;
+                });
+
+                html += '</tr></thead><tbody>';
+
+                data.rows.forEach(row => {
+                    html += '<tr>';
+                    Object.values(row).forEach(val => {
+                        html += `<td>${val}</td>`;
+                    });
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+            }
+
+            $('#custom-sql-result').html(html);
+        }).fail(function () {
+            $('#custom-sql-result').html('<div class="alert alert-danger">Помилка при виконанні SQL</div>');
+        });
+    });
+});
+</script>
+{% endblock %}

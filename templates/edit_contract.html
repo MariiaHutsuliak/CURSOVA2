@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Редагувати договір{% endblock %}
+
+{% block content %}
+
+{% if current_user.role in ['administrator', 'operator'] %}
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-2 d-flex align-items-start mt-2 ">
+            <a href="{{ url_for('suppliers') }}" class="btn btn-secondary w-100">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="card mt-2 shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-file-contract"></i> Редагувати договір</h4>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST" action="{{ url_for('edit_contract', contract_id=contract.id) }}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Номер договору *</label>
+                            <input type="text" class="form-control" name="contract_number"
+                                   value="{{ contract.contract_number }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Постачальник</label>
+                            <input type="text" class="form-control" value="{{ contract.supplier.name }}" disabled>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Дата початку *</label>
+                                <input type="date" class="form-control" name="start_date"
+                                       value="{{ contract.start_date.strftime('%Y-%m-%d') }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Дата закінчення *</label>
+                                <input type="date" class="form-control" name="end_date"
+                                       value="{{ contract.end_date.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-warning mt-3">
+                            <i class="fas fa-save"></i> Оновити договір
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <h5><i class="fas fa-boxes"></i> Товари за договором</h5>
+
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Ціна</th>
+                                <th>Кількість</th>
+                                <th>Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cp in contract.contract_products %}
+                            <tr>
+                                <td>{{ cp.product.name }}</td>
+                                <td>{{ "%.2f"|format(cp.purchase_price) }} грн</td>
+                                <td>{{ cp.quantity_per_delivery }}</td>
+                                <td>
+                                    <a href="{{ url_for('delete_contract_product', cp_id=cp.id) }}"
+                                       class="btn btn-danger btn-sm {% if expired %}disabled{% endif %}"
+                                       onclick="return {% if expired %}false{% else %}confirm('Видалити товар з договору?'){% endif %};">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <hr class="my-4">
+
+
+                    <h5><i class="fas fa-plus-circle"></i> Додати товар у договір</h5>
+                    {% if expired %}
+                        <div class="alert alert-warning mt-2">
+                            Договір завершився — додавання товарів неможливе.
+                        </div>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('add_contract_product', contract_id=contract.id) }}">
+
+                        <div class="row align-items-end mt-3">
+
+                            <div class="col-md-5">
+                                <label class="form-label">Товар *</label>
+                                <select name="product_id" class="form-select" required>
+                                    <option value="">Оберіть товар</option>
+                                    {% for p in products %}
+                                    <option value="{{ p.id }}">{{ p.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Ціна *</label>
+                                <input type="number" step="0.01" name="purchase_price"
+                                       class="form-control" required>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Кількість *</label>
+                                <input type="number" min="1" name="quantity_per_delivery"
+                                       class="form-control" required>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button class="btn btn-success w-100 mt-3">
+                                    <i class="fas fa-save"></i> Додати
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

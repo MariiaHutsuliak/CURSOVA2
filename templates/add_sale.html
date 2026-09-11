@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Новий продаж{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Додати новий продаж</h4>
+            </div>
+
+            <div class="card-body">
+
+                <form method="GET" action="{{ url_for('add_sale') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Співробітник *</label>
+                        <select name="employee_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">Оберіть співробітника</option>
+                            {% for e in employees %}
+                                <option value="{{ e.id }}" {% if selected_emp_id == e.id|string %}selected{% endif %}>
+                                    {{ e.full_name }} ({{ e.department.name }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+
+                {% if products %}
+                <form method="POST" action="{{ url_for('add_sale') }}">
+
+                    <input type="hidden" name="employee_id" value="{{ selected_emp_id }}">
+
+                    <h5 class="mt-4 mb-3"><i class="fas fa-box"></i> Товари</h5>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Ціна</th>
+                                <th>Кількість</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in products %}
+                            <tr>
+                                <td>
+                                    {{ p.name }}
+                                    <input type="hidden" name="product_id" value="{{ p.id }}">
+                                </td>
+                                <td>{{ "%.2f"|format(p.price) }} грн</td>
+                                <td>
+                                    <input type="number" min="0" name="quantity" class="form-control" value="0">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Зберегти
+                        </button>
+                        <a href="{{ url_for('sales') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+
+                </form>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

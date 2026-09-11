@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Створити оператора - Книжковий магазин{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Створити оператора</h4>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Логін *</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                        <div class="form-text">Логін повинен бути унікальним</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль *</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="form-text">Мінімум 8 символів</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Підтвердження паролю *</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Створити оператора
+                    </button>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </a>
+                </form>
+
+                <div class="mt-4">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Інформація</h6>
+                        <ul class="mb-0">
+                            <li>Оператор матиме доступ до всіх функцій системи</li>
+                            <li>Логін та email повинні бути унікальними</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    function validatePassword() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Паролі не співпадають');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+
+    password.addEventListener('change', validatePassword);
+    confirmPassword.addEventListener('keyup', validatePassword);
+});
+</script>
+{% endblock %}

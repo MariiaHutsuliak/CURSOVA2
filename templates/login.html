@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Вхід в систему - Книжковий магазин{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Вхід в систему</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Увійти
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p>Немає облікового запису?</p>
+                    <a href="{{ url_for('register_request') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-user-plus"></i> Подати заявку на реєстрацію
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

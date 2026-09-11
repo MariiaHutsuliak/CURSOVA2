@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Поставки - Книжковий магазин{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-dolly"></i> Поставки товарів</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Список поставок</h4>
+
+                {% if current_user.role in ['administrator', 'operator'] %}
+                <a href="{{ url_for('add_delivery') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle"></i> Додати поставку
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <div class="table">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Дата поставки</th>
+                                <th>Постачальник</th>
+                                <th>Договір</th>
+                                <th>Кількість товарів</th>
+                                <th>Вартість</th>
+                                {% if current_user.role in ['administrator','operator'] %}
+                                <th>Дії</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for delivery in deliveries %}
+                            <tr>
+                                <td>{{ delivery.id }}</td>
+                                <td>{{ delivery.delivery_date.strftime('%d.%m.%Y') }}</td>
+                                <td>{{ delivery.contract.supplier.name }}</td>
+                                <td>{{ delivery.contract.contract_number }}</td>
+
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge bg-primary">
+                                            {{ delivery.delivery_items|length }} позицій
+                                        </span>
+
+                                        {% set total_qty = delivery.delivery_items | sum(attribute='quantity') %}
+                                        <span class="badge bg-info">
+                                            {{ total_qty }} шт
+                                        </span>
+                                    </div>
+
+                                    {% set names = delivery.delivery_items | map(attribute='product.name') | list %}
+                                    <small class="text-muted">{{ names|join(', ') }}</small>
+                                </td>
+
+                                <td>
+                                    {% set total = delivery.delivery_items | sum(attribute='total_price') %}
+                                    <span class="badge bg-secondary">
+                                        {{ "%.2f"|format(total) }} грн
+                                    </span>
+                                </td>
+
+                                {% if current_user.role in ['administrator','operator'] %}
+                                <td>
+                                    <a href="{{ url_for('edit_delivery', delivery_id=delivery.id) }}"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a href="{{ url_for('delete_delivery', delivery_id=delivery.id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Видалити поставку? Товари будуть вилучені зі складу.')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                                {% endif %}
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Продажі - Книжковий магазин{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-cash-register"></i> Облік продажів</h1>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+           <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Список продажів</h4>
+                {% if current_user.is_operator() or current_user.is_administrator() %}
+                <a href="{{ url_for('add_sale') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle"></i> Додати продаж
+                </a>
+                {% endif %}
+           </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Дата</th>
+                                <th>Час</th>
+                                <th>Співробітник</th>
+                                <th>Відділ</th>
+                                <th>Сума</th>
+                                <th>Кількість позицій</th>
+                                {% if current_user.role in ['administrator', 'operator'] %}
+                                <th>Дії</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in sales %}
+                            <tr>
+                                <td>{{ sale.id }}</td>
+                                <td>{{ sale.sale_date.strftime('%d.%m.%Y') }}</td>
+                                <td>{{ sale.sale_time.strftime('%H:%M') }}</td>
+                                <td>{{ sale.employee.full_name }}</td>
+                                <td>{{ sale.employee.department.name }}</td>
+                                <td>{{ "%.2f"|format(sale.total_amount) }} грн</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ sale.sale_items|length }}</span>
+                                </td>
+                                 {% if current_user.role in ['administrator', 'operator'] %}
+                                <td class="d-flex gap-2">
+                                    <a href="{{ url_for('edit_sale', sale_id=sale.id) }}"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a href="{{ url_for('delete_sale', sale_id=sale.id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Видалити цей продаж?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Статистика за сьогодні</h5>
+            </div>
+            <div class="card-body">
+                {% set today_sales = sales|selectattr('sale_date', 'equalto', today)|list %}
+                {% set today_total = today_sales|sum(attribute='total_amount') %}
+                {% set today_count = today_sales|length %}
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h3 class="text-primary">{{ today_count }}</h3>
+                        <p class="text-muted">Продажів</p>
+                    </div>
+                    <div class="col-6">
+                        <h3 class="text-success">{{ "%.2f"|format(today_total) }} грн</h3>
+                        <p class="text-muted">Виторг</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Топ співробітники за сьогодні</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Співробітник</th>
+                                <th>Продажів</th>
+                                <th>Сума</th>
+                            </tr>
+                        </thead>
+
+                        {% set stats = {} %}
+                        {% for s in today_sales %}
+                            {% set emp = s.employee.full_name %}
+                            {% if emp not in stats %}
+                                {% set _ = stats.update({emp: {'count': 0, 'sum': 0}}) %}
+                            {% endif %}
+                            {% set _ = stats[emp].update({
+                                'count': stats[emp].count + 1,
+                                'sum': stats[emp].sum + s.total_amount
+                            }) %}
+                        {% endfor %}
+
+                        {% set top_employees = stats.items()|sort(attribute='1.sum', reverse=true) %}
+
+                        <tbody>
+                            {% for emp, data in top_employees[:5] %}
+                            <tr>
+                                <td>{{ emp }}</td>
+                                <td>{{ data.count }}</td>
+                                <td>{{ "%.2f"|format(data.sum) }} грн</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Історія моїх запитів{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-history"></i> Історія виконаних запитів</h1>
+
+<div class="card">
+    <div class="card-body">
+        {% if history %}
+        <div class="table">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Запит</th>
+                        <th>Параметри</th>
+                        <th>Результат</th>
+                        <th>Час</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in history %}
+                    <tr>
+                        <td>{{ item.api }}</td>
+                        <td><pre style="white-space: pre-wrap;">{{ item.params }}</pre></td>
+                        <td><pre style="white-space: pre-wrap;">{{ item.result }}</pre></td>
+                        <td>{{ item.timestamp }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">Історія порожня.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки на реєстрацію - Книжковий магазин{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-user-check"></i> Заявки на реєстрацію</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Список заявок на реєстрацію</h5>
+            </div>
+            <div class="card-body">
+                {% if requests %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Повне ім'я</th>
+                                    <th>Email</th>
+                                    <th>Телефон</th>
+                                    <th>Дата заявки</th>
+                                    <th>Статус</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in requests %}
+                                <tr>
+                                    <td>{{ request.id }}</td>
+                                    <td>{{ request.full_name }}</td>
+                                    <td>{{ request.email }}</td>
+                                    <td>{{ request.phone or '-' }}</td>
+                                    <td>{{ moment(request.request_date).format('DD.MM.YYYY HH:mm') }}</td>
+                                    <td>
+                                        {% if request.status == 'pending' %}
+                                            <span class="badge bg-warning">Очікує</span>
+                                        {% elif request.status == 'approved' %}
+                                            <span class="badge bg-success">Схвалено</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Відхилено</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if request.status == 'pending' %}
+                                            <a href="{{ url_for('approve_request', request_id=request.id) }}"
+                                               class="btn btn-success btn-sm"
+                                               onclick="return confirm('Схвалити заявку?')">
+                                                <i class="fas fa-check"></i> Схвалити
+                                            </a>
+                                            <a href="{{ url_for('reject_request', request_id=request.id) }}"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Відхилити заявку?')">
+                                                <i class="fas fa-times"></i> Відхилити
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Оброблено</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Немає заявок на реєстрацію</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

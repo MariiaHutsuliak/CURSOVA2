@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Додати продукцію - Книжковий магазин{% endblock %}
+
+{% block content %}
+
+{% if current_user.role in ['administrator', 'operator'] %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle"></i> Додати новий товар
+                </h4>
+            </div>
+
+            <div class="card-body">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }}
+                                        alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Назва товару *</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Автор</label>
+                                <input type="text" class="form-control" id="author" name="author">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="publisher" class="form-label">Видавництво</label>
+                                <input type="text" class="form-control" id="publisher" name="publisher">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="isbn" class="form-label">ISBN</label>
+                                <input type="text" class="form-control" id="isbn" name="isbn">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="publication_date" class="form-label">Дата публікації</label>
+                                <input type="date" class="form-control" id="publication_date" name="publication_date">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Ціна *</label>
+                                <input type="number" class="form-control" step="0.01" id="price" name="price" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="stock_quantity" class="form-label">Кількість на складі *</label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">Категорія *</label>
+                        <select class="form-control" id="category_id" name="category_id" required>
+                            <option value="">Оберіть категорію</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Відділ *</label>
+                        <select class="form-select" name="department_id" required>
+                            <option value="">Оберіть відділ</option>
+                            {% for d in departments %}
+                                <option value="{{ d.id }}">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Зберегти
+                        </button>
+                        <a href="{{ url_for('products') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+<div class="alert alert-danger text-center mt-4">
+    У вас немає прав доступу до цієї функції.
+</div>
+
+{% endif %}
+
+{% endblock %}

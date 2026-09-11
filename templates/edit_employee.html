@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Редагувати співробітника - Книжковий магазин{% endblock %}
+
+{% block content %}
+
+{% if current_user.role in ['administrator', 'operator'] %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Редагувати співробітника</h4>
+            </div>
+
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }}
+                                        alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Ім'я *</label>
+                                <input type="text" class="form-control" name="first_name"
+                                       value="{{ employee.first_name }}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Прізвище *</label>
+                                <input type="text" class="form-control" name="last_name"
+                                       value="{{ employee.last_name }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Посада *</label>
+                                <select class="form-control" name="position" required>
+                                    <option value="">Оберіть посаду</option>
+                                    <option value="касир" {{ 'selected' if employee.position == 'касир' }}>Касир</option>
+                                    <option value="продавець-консультант" {{ 'selected' if employee.position == 'продавець-консультант' }}>Продавець-консультант</option>
+                                    <option value="керівник відділу" {{ 'selected' if employee.position == 'керівник відділу' }}>Керівник відділу</option>
+                                    <option value="старший касир" {{ 'selected' if employee.position == 'старший касир' }}>Старший касир</option>
+                                    <option value="адміністратор" {{ 'selected' if employee.position == 'адміністратор' }}>Адміністратор</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Відділ *</label>
+                                <select class="form-control" name="department_id" required>
+                                    <option value="">Оберіть відділ</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.id }}"
+                                            {% if employee.department_id == department.id %}selected{% endif %}>
+                                            {{ department.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" name="phone"
+                                       value="{{ employee.phone or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email"
+                                       value="{{ employee.email or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="сol md-6">
+                                <div class="mb-3 form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_on_vacation" name="is_on_vacation"
+                                        {% if employee.is_on_vacation %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_on_vacation">
+                                        У відпустці
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Оновити
+                        </button>
+                        <a href="{{ url_for('employees') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

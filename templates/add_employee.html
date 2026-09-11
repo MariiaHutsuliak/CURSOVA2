@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Додати співробітника - Книжковий магазин{% endblock %}
+
+{% block content %}
+
+{% if current_user.role in ['administrator', 'operator'] %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-circle-plus"></i> Додати нового співробітника</h4>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">Ім'я *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Прізвище *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="position" class="form-label">Посада *</label>
+                                <select class="form-control" id="position" name="position" required>
+                                    <option value="">Оберіть посаду</option>
+                                    <option value="касир">Касир</option>
+                                    <option value="продавець-консультант">Продавець-консультант</option>
+                                    <option value="керівник відділу">Керівник відділу</option>
+                                    <option value="старший касир">Старший касир</option>
+                                    <option value="адміністратор">Адміністратор</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department_id" class="form-label">Відділ *</label>
+                                <select class="form-control" id="department_id" name="department_id" required>
+                                    <option value="">Оберіть відділ</option>
+                                    {% for department in departments %}
+                                    <option value="{{ department.id }}">{{ department.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <div class="сol md-6">
+                                <div class="mb-3 form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_on_vacation" name="is_on_vacation">
+                                    <label class="form-check-label" for="is_on_vacation">
+                                        У відпустці
+                                    </label>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Зберегти
+                        </button>
+                        <a href="{{ url_for('employees') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+<div class="alert alert-danger mt-4">
+    <strong>У вас немає прав доступу до цієї функції.</strong>
+</div>
+
+{% endif %}
+
+{% endblock %}

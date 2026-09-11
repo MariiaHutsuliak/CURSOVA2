@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Редагувати постачальника - Книжковий магазин{% endblock %}
+
+{% block content %}
+
+{% if current_user.role in ['administrator', 'operator'] %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Редагувати постачальника</h4>
+            </div>
+            <div class="card-body">
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Назва постачальника *</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ supplier.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contact_person" class="form-label">Контактна особа</label>
+                        <input type="text" class="form-control" id="contact_person" name="contact_person"
+                               value="{{ supplier.contact_person or '' }}">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" name="phone"
+                                       value="{{ supplier.phone or '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ supplier.email or '' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Адреса</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">{{ supplier.address or '' }}</textarea>
+                    </div>
+
+                    <hr class="my-4">
+                    <h4 class="mb-3"><i class="fas fa-file-contract"></i> Договори постачальника</h4>
+
+                    <a href="{{ url_for('add_contract', supplier_id=supplier.id) }}"
+                       class="btn btn-success btn-sm mb-3">
+                        <i class="fas fa-plus-circle"></i> Додати договір
+                    </a>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>№ договору</th>
+                                    <th>Початок</th>
+                                    <th>Кінець</th>
+                                    <th>Статус</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contract in supplier.contracts if not contract.is_deleted %}
+                                <tr>
+                                    <td>{{ contract.contract_number }}</td>
+                                    <td>{{ contract.start_date.strftime('%d.%m.%Y') }}</td>
+                                    <td>{{ contract.end_date.strftime('%d.%m.%Y') }}</td>
+
+                                    <td>
+                                        {% if contract.end_date < today %}
+                                            <span class="badge bg-danger">Завершений</span>
+                                        {% elif contract.start_date <= today <= contract.end_date %}
+                                            <span class="badge bg-success">Активний</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Майбутній</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="d-flex gap-2">
+                                        <a href="{{ url_for('edit_contract', contract_id=contract.id) }}"
+                                           class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        {% if contract.end_date < today %}
+                                            <a href="{{ url_for('delete_contract', contract_id=contract.id) }}"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Видалити цей договір?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        {% else %}
+                                            <button class="btn btn-danger btn-sm" disabled
+                                                    title="Можна видалити лише завершені договори">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Оновити
+                        </button>
+                        <a href="{{ url_for('suppliers') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

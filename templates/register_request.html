@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка на реєстрацію - Книжковий магазин{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Заявка на реєстрацію</h4>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Заповніть форму для подачі заявки</h5>
+                        <p class="text-muted">Після обробки заявки адміністратором ви отримаєте доступ до системи з правами авторизованого користувача.</p>
+
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">Повне ім'я *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль *</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="form-text">Мінімум 8 символів</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Підтвердження паролю *</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Надіслати заявку
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Права доступу в системі</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6><i class="fas fa-crown text-warning"></i> Адміністратор СД</h6>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success"></i> Повний доступ до всіх функцій</li>
+                                    <li><i class="fas fa-check text-success"></i> Управління користувачами</li>
+                                    <li><i class="fas fa-check text-success"></i> Обробка заявок на реєстрацію</li>
+                                    <li><i class="fas fa-check text-success"></i> Створення операторів</li>
+                                </ul>
+
+                                <hr>
+
+                                <h6><i class="fas fa-user-cog text-info"></i> Оператор СД</h6>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success"></i> Перегляд даних</li>
+                                    <li><i class="fas fa-check text-success"></i> CRUD операції</li>
+                                    <li><i class="fas fa-check text-success"></i> Виконання запитів</li>
+                                    <li><i class="fas fa-check text-success"></i> Генерація звітів</li>
+                                <hr>
+
+                                <h6><i class="fas fa-user-check text-primary"></i> Авторизований користувач</h6>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success"></i> Перегляд каталогу товарів</li>
+                                    <li><i class="fas fa-check text-success"></i> Виконання основних запитів</li>
+                                    <li><i class="fas fa-check text-success"></i> Аналіз продажів та виторгу</li>
+                                    <li><i class="fas fa-check text-success"></i> Доступ до звітів</li>
+                                </ul>
+
+                                <hr>
+
+                                <h6><i class="fas fa-user text-muted"></i> Гість</h6>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success"></i> Подання заявки на реєстрацію</li>
+                                    <li><i class="fas fa-times text-danger"></i> Обмежений доступ до системи</li>
+                                </ul>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    function validatePassword() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Паролі не співпадають');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+
+    password.addEventListener('change', validatePassword);
+    confirmPassword.addEventListener('keyup', validatePassword);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Редагувати продаж{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Редагувати продаж №{{ sale.id }}</h4>
+            </div>
+
+            <div class="card-body">
+                <form method="POST">
+
+                    <h5 class="mb-3"><i class="fas fa-box"></i> Товари</h5>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Ціна</th>
+                                <th>Кількість</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for p in products %}
+                            {% set item = sale.sale_items|selectattr('product_id', 'equalto', p.id)|first %}
+                            <tr>
+                                <td>{{ p.name }}</td>
+                                <td>{{ "%.2f"|format(p.price) }} грн</td>
+                                <td style="width:120px;">
+                                    <input type="number" min="0" class="form-control"
+                                           name="quantity_{{ p.id }}"
+                                           value="{{ item.quantity if item else 0 }}">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-warning">
+                            <i class="fas fa-save"></i> Зберегти зміни
+                        </button>
+
+                        <a href="{{ url_for('sales') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Співробітники - Книжковий магазин{% endblock %}
+
+{% block content %}
+<h1><i class="fas fa-users"></i> Співробітники</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Список співробітників</h4>
+                {% if current_user.is_operator() or current_user.is_administrator() %}
+                <a href="{{ url_for('add_employee') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle"></i> Додати співробітника
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ПІБ</th>
+                                <th>Посада</th>
+                                <th>Відділ</th>
+                                <th>Телефон</th>
+                                <th>Email</th>
+                                <th>Дата прийняття</th>
+                                <th>Відпустка</th>
+                                {% if current_user.role in ['administrator', 'operator'] %}
+                                    <th>Дії</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for employee in employees %}
+                            <tr>
+                                <td>{{ employee.id }}</td>
+                                <td>{{ employee.full_name }}</td>
+                                <td>{{ employee.position }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ employee.department.name }}</span>
+                                </td>
+                                <td>{{ employee.phone or '-' }}</td>
+                                <td>{{ employee.email or '-' }}</td>
+                                <td>{{ employee.hire_date.strftime('%d.%m.%Y') }}</td>
+                                <td>
+                                    {% if employee.is_on_vacation %}
+                                        <span class="badge bg-info">Так</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Ні</span>
+                                    {% endif %}
+                                </td>
+
+                                {% if current_user.role in ['administrator', 'operator'] %}
+                                <td class="d-flex gap-2">
+                                    <a href="{{ url_for('edit_employee', employee_id=employee.id) }}"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('delete_employee', employee_id=employee.id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Ви впевнені, що хочете видалити цього співробітника?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<h4><i class="fas fa-calendar"></i> Графік роботи співробітників</h4>
+
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Зміни</h5>
+
+        {% if current_user.role in ['administrator', 'operator'] %}
+        <a href="{{ url_for('add_schedule') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-plus-circle"></i> Додати зміну
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Співробітник</th>
+                        <th>Відділ</th>
+                        <th>Дата</th>
+                        <th>Початок зміни</th>
+                        <th>Кінець зміни</th>
+
+                        {% if current_user.role in ['administrator', 'operator'] %}
+                        <th>Дії</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for ws in work_schedules %}
+                    <tr>
+                        <td>{{ ws.id }}</td>
+                        <td>{{ ws.employee.full_name }}</td>
+                        <td>{{ ws.department.name }}</td>
+                        <td>{{ ws.work_date.strftime('%d.%m.%Y') }}</td>
+                        <td>{{ ws.shift_start.strftime('%H:%M') }}</td>
+                        <td>{{ ws.shift_end.strftime('%H:%M') }}</td>
+
+                        {% if current_user.role in ['administrator', 'operator'] %}
+                        <td class="d-flex gap-2">
+                            <a href="{{ url_for('edit_schedule', schedule_id=ws.id) }}"
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a href="{{ url_for('delete_schedule', schedule_id=ws.id) }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Видалити цю зміну?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
