@@ -2,7 +2,7 @@ from decimal import Decimal
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from models import db, Employee, Department, Supplier, Contract, Product, ProductCategory, Sale, SaleItem, WorkSchedule, Delivery, DeliveryItem, ContractProduct, User, UserRequest
 from queries import BookstoreQueries
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_moment import Moment
 from functools import wraps
@@ -134,7 +134,7 @@ def approve_request(request_id):
 
     user_request.status = 'approved'
     user_request.reviewed_by = current_user.id
-    user_request.reviewed_at = datetime.utcnow()
+    user_request.reviewed_at = datetime.now(timezone.utc)
 
     db.session.add(new_user)
     db.session.commit()
