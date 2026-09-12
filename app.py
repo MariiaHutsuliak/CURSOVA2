@@ -1479,6 +1479,88 @@ def add_sale_duplicate_test():
     db.session.add(sale)
     db.session.flush()
 
+
+@app.route('/deliveries/add_duplicate_test', methods=['GET', 'POST'])
+@requires_operator_or_admin
+def add_delivery_duplicate_test():
+    today = date.today()
+
+    contracts = Contract.query.filter(
+        Contract.is_deleted == False,
+        Contract.start_date <= today,
+        Contract.end_date >= today
+    ).all()
+
+    selected_contract_id = request.args.get("contract_id", type=int)
+    contract_products = []
+
+    if selected_contract_id:
+        contract = Contract.query.get(selected_contract_id)
+        if contract:
+            contract_products = ContractProduct.query.filter_by(contract_id=selected_contract_id).all()
+
+    if request.method == 'GET':
+        return render_template(
+            "add_delivery.html",
+            contracts=contracts,
+            contract_products=contract_products,
+            selected_contract_id=selected_contract_id
+        )
+
+    contract_id = request.form.get('contract_id', type=int)
+
+    if not contract_id:
+        flash("Оберіть договір.", "danger")
+        return redirect(url_for('add_delivery'))
+
+    delivery = Delivery(
+        contract_id=contract_id,
+        delivery_date=date.today(),
+        total_amount=0
+    )
+    db.session.add(delivery)
+    db.session.flush()
+
+    product_ids = request.form.getlist('product_id')
+    quantities = request.form.getlist('quantity')
+
+    total_amount = 0
+    items_added = 0
+
+    for pid, qty_raw in zip(product_ids, quantities):
+
+        if not qty_raw or int(qty_raw) <= 0:
+            continue
+
+        product = Product.query.get(int(pid))
+        qty = int(qty_raw)
+
+        unit_price = product.price
+        total_price = unit_price * qty
+
+        db.session.add(DeliveryItem(
+            delivery_id=delivery.id,
+            product_id=product.id,
+            quantity=qty,
+            unit_price=unit_price,
+            total_price=total_price
+        ))
+
+        product.stock_quantity += qty
+        total_amount += total_price
+        items_added += 1
+
+    if items_added == 0:
+        db.session.rollback()
+        flash("Поставка повинна містити хоча б один товар.", "danger")
+        return redirect(url_for('add_delivery', contract_id=contract_id))
+
+    delivery.total_amount = total_amount
+    db.session.commit()
+
+    flash("Поставка створена успішно.", "success")
+    return redirect(url_for('deliveries'))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
