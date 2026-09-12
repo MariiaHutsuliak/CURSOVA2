@@ -701,6 +701,8 @@ def edit_schedule(schedule_id):
 def delete_schedule(schedule_id):
     schedule = WorkSchedule.query.get_or_404(schedule_id)
 
+    deleted_at = datetime.utcnow()
+
     db.session.delete(schedule)
     db.session.commit()
 
@@ -1431,6 +1433,48 @@ def api_query10():
 def my_history():
     history = load_history(current_user.id)
     return render_template("my_history.html", history=history)
+
+@app.route('/sales/add_duplicate_test', methods=['GET', 'POST'])
+@requires_operator_or_admin
+def add_sale_duplicate_test():
+    employees = Employee.query.filter_by(is_deleted=False).all()
+
+    if request.method == 'GET':
+        selected_emp_id = request.args.get('employee_id')
+
+        if not selected_emp_id:
+            return render_template("add_sale.html",
+                                   employees=employees,
+                                   products=[],
+                                   selected_emp_id=None)
+
+        employee = Employee.query.get(int(selected_emp_id))
+
+        products = Product.query.filter_by(
+            department_id=employee.department_id,
+            is_deleted=False
+        ).all()
+
+        return render_template("add_sale.html",
+                               employees=employees,
+                               products=products,
+                               selected_emp_id=selected_emp_id)
+
+    employee_id = int(request.form.get('employee_id'))
+    employee = Employee.query.get(employee_id)
+
+    if not employee:
+        flash("Невірний співробітник.", "danger")
+        return redirect(url_for('add_sale'))
+
+    sale = Sale(
+        employee_id=employee_id,
+        sale_date=date.today(),
+        sale_time=datetime.now().time(),
+        total_amount=0
+    )
+    db.session.add(sale)
+    db.session.flush()
 
 if __name__ == "__main__":
     with app.app_context():
