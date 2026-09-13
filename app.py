@@ -154,7 +154,7 @@ def reject_request(request_id):
 
     user_request.status = 'rejected'
     user_request.reviewed_by = current_user.id
-    user_request.reviewed_at = datetime.utcnow()
+    user_request.reviewed_at = datetime.now(timezone.utc)
 
     db.session.commit()
 
@@ -374,27 +374,40 @@ def sales():
     return render_template('sales.html', sales=sales, today=today)
 
 
-@app.route('/sales/add', methods=['GET', 'POST'])
-@requires_operator_or_admin
-def add_sale():
+def get_employees_and_products_for_sale(selected_emp_id):
+    """Допоміжна функція: повертає список співробітників і доступних їм товарів."""
     employees = Employee.query.filter_by(is_deleted=False).all()
+    products = []
 
-    if request.method == 'GET':
-        selected_emp_id = request.args.get('employee_id')
-
-        if not selected_emp_id:
-            return render_template("add_sale.html",
-                                   employees=employees,
-                                   products=[],
-                                   selected_emp_id=None)
-
+    if selected_emp_id:
         employee = Employee.query.get(int(selected_emp_id))
-
         products = Product.query.filter_by(
             department_id=employee.department_id,
             is_deleted=False
         ).all()
 
+    return employees, products
+
+
+def create_pending_sale(employee_id):
+    """Допоміжна функція: створює новий запис продажу (без товарів) і повертає його."""
+    sale = Sale(
+        employee_id=employee_id,
+        sale_date=date.today(),
+        sale_time=datetime.now().time(),
+        total_amount=0
+    )
+    db.session.add(sale)
+    db.session.flush()
+    return sale
+
+
+@app.route('/sales/add', methods=['GET', 'POST'])
+@requires_operator_or_admin
+def add_sale():
+    if request.method == 'GET':
+        selected_emp_id = request.args.get('employee_id')
+        employees, products = get_employees_and_products_for_sale(selected_emp_id)
         return render_template("add_sale.html",
                                employees=employees,
                                products=products,
@@ -407,14 +420,7 @@ def add_sale():
         flash("Невірний співробітник.", "danger")
         return redirect(url_for('add_sale'))
 
-    sale = Sale(
-        employee_id=employee_id,
-        sale_date=date.today(),
-        sale_time=datetime.now().time(),
-        total_amount=0
-    )
-    db.session.add(sale)
-    db.session.flush()
+    sale = create_pending_sale(employee_id)
 
     product_ids = request.form.getlist('product_id')
     quantities = request.form.getlist('quantity')
@@ -868,9 +874,9 @@ def deliveries():
     deliveries = Delivery.query.order_by(Delivery.delivery_date.desc()).all()
     return render_template("deliveries.html", deliveries=deliveries)
 
-@app.route('/deliveries/add', methods=['GET', 'POST'])
-@requires_operator_or_admin
-def add_delivery():
+
+def get_contracts_and_products_for_delivery(selected_contract_id):
+    """Допоміжна функція: повертає активні договори і товари обраного договору."""
     today = date.today()
 
     contracts = Contract.query.filter(
@@ -879,13 +885,34 @@ def add_delivery():
         Contract.end_date >= today
     ).all()
 
-    selected_contract_id = request.args.get("contract_id", type=int)
     contract_products = []
-
     if selected_contract_id:
         contract = Contract.query.get(selected_contract_id)
         if contract:
-            contract_products = ContractProduct.query.filter_by(contract_id=selected_contract_id).all()
+            contract_products = ContractProduct.query.filter_by(
+                contract_id=selected_contract_id
+            ).all()
+
+    return contracts, contract_products
+
+
+def create_pending_delivery(contract_id):
+    """Допоміжна функція: створює новий запис поставки (без товарів) і повертає його."""
+    delivery = Delivery(
+        contract_id=contract_id,
+        delivery_date=date.today(),
+        total_amount=0
+    )
+    db.session.add(delivery)
+    db.session.flush()
+    return delivery
+
+
+@app.route('/deliveries/add', methods=['GET', 'POST'])
+@requires_operator_or_admin
+def add_delivery():
+    selected_contract_id = request.args.get("contract_id", type=int)
+    contracts, contract_products = get_contracts_and_products_for_delivery(selected_contract_id)
 
     if request.method == 'GET':
         return render_template(
@@ -901,13 +928,7 @@ def add_delivery():
         flash("Оберіть договір.", "danger")
         return redirect(url_for('add_delivery'))
 
-    delivery = Delivery(
-        contract_id=contract_id,
-        delivery_date=date.today(),
-        total_amount=0
-    )
-    db.session.add(delivery)
-    db.session.flush()
+    delivery = create_pending_delivery(contract_id)
 
     product_ids = request.form.getlist('product_id')
     quantities = request.form.getlist('quantity')
@@ -1432,27 +1453,13 @@ def my_history():
     history = load_history(current_user.id)
     return render_template("my_history.html", history=history)
 
+
 @app.route('/sales/add_duplicate_test', methods=['GET', 'POST'])
 @requires_operator_or_admin
 def add_sale_duplicate_test():
-    employees = Employee.query.filter_by(is_deleted=False).all()
-
     if request.method == 'GET':
         selected_emp_id = request.args.get('employee_id')
-
-        if not selected_emp_id:
-            return render_template("add_sale.html",
-                                   employees=employees,
-                                   products=[],
-                                   selected_emp_id=None)
-
-        employee = Employee.query.get(int(selected_emp_id))
-
-        products = Product.query.filter_by(
-            department_id=employee.department_id,
-            is_deleted=False
-        ).all()
-
+        employees, products = get_employees_and_products_for_sale(selected_emp_id)
         return render_template("add_sale.html",
                                employees=employees,
                                products=products,
@@ -1465,34 +1472,15 @@ def add_sale_duplicate_test():
         flash("Невірний співробітник.", "danger")
         return redirect(url_for('add_sale'))
 
-    sale = Sale(
-        employee_id=employee_id,
-        sale_date=date.today(),
-        sale_time=datetime.now().time(),
-        total_amount=0
-    )
-    db.session.add(sale)
-    db.session.flush()
+    sale = create_pending_sale(employee_id)
+    return redirect(url_for('sales'))
 
 
 @app.route('/deliveries/add_duplicate_test', methods=['GET', 'POST'])
 @requires_operator_or_admin
 def add_delivery_duplicate_test():
-    today = date.today()
-
-    contracts = Contract.query.filter(
-        Contract.is_deleted == False,
-        Contract.start_date <= today,
-        Contract.end_date >= today
-    ).all()
-
     selected_contract_id = request.args.get("contract_id", type=int)
-    contract_products = []
-
-    if selected_contract_id:
-        contract = Contract.query.get(selected_contract_id)
-        if contract:
-            contract_products = ContractProduct.query.filter_by(contract_id=selected_contract_id).all()
+    contracts, contract_products = get_contracts_and_products_for_delivery(selected_contract_id)
 
     if request.method == 'GET':
         return render_template(
@@ -1508,53 +1496,9 @@ def add_delivery_duplicate_test():
         flash("Оберіть договір.", "danger")
         return redirect(url_for('add_delivery'))
 
-    delivery = Delivery(
-        contract_id=contract_id,
-        delivery_date=date.today(),
-        total_amount=0
-    )
-    db.session.add(delivery)
-    db.session.flush()
-
-    product_ids = request.form.getlist('product_id')
-    quantities = request.form.getlist('quantity')
-
-    total_amount = 0
-    items_added = 0
-
-    for pid, qty_raw in zip(product_ids, quantities):
-
-        if not qty_raw or int(qty_raw) <= 0:
-            continue
-
-        product = Product.query.get(int(pid))
-        qty = int(qty_raw)
-
-        unit_price = product.price
-        total_price = unit_price * qty
-
-        db.session.add(DeliveryItem(
-            delivery_id=delivery.id,
-            product_id=product.id,
-            quantity=qty,
-            unit_price=unit_price,
-            total_price=total_price
-        ))
-
-        product.stock_quantity += qty
-        total_amount += total_price
-        items_added += 1
-
-    if items_added == 0:
-        db.session.rollback()
-        flash("Поставка повинна містити хоча б один товар.", "danger")
-        return redirect(url_for('add_delivery', contract_id=contract_id))
-
-    delivery.total_amount = total_amount
-    db.session.commit()
-
-    flash("Поставка створена успішно.", "success")
+    delivery = create_pending_delivery(contract_id)
     return redirect(url_for('deliveries'))
+
 
 if __name__ == "__main__":
     with app.app_context():
