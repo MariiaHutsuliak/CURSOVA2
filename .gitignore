@@ -6,3 +6,5 @@ instance/
 .idea/
 .sonar/
 .pytest_cache/
+
+.DS_Store
