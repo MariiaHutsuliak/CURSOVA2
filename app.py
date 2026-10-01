@@ -493,95 +493,119 @@ def add_sale():
 
 
 
+def parse_sale_quantities(form):
+    """Допоміжна функція: з даних форми витягує {product_id: quantity} лише для коректних додатних кількостей."""
+    quantities = {}
+
+    for key in form:
+        if not key.startswith("quantity_"):
+            continue
+
+        product_id = int(key.split("_")[1])
+        quantity = parse_positive_int(form[key])
+
+        if quantity is not None:
+            quantities[product_id] = quantity
+
+    return quantities
+
+
+def parse_positive_int(raw_value):
+    """Допоміжна функція: повертає ціле додатне число або None (порожнє значення, текст, нуль, від'ємне)."""
+    try:
+        value = int(raw_value)
+    except ValueError:
+        return None
+
+    return value if value > 0 else None
+
+
+def return_items_to_stock(old_items):
+    """Допоміжна функція: повертає на склад кількості зі старих позицій продажу."""
+    for product_id, old_quantity in old_items.items():
+        product = Product.query.get(product_id)
+        product.stock_quantity += old_quantity
+
+    db.session.flush()
+
+
+def find_sale_item_error(new_items, employee):
+    """Допоміжна функція: повертає текст першої помилки валідації нових позицій або None, якщо все коректно."""
+    for product_id, quantity in new_items.items():
+        product = Product.query.get(product_id)
+
+        if product.department_id != employee.department_id:
+            return "Товар не належить відділу співробітника."
+
+        if quantity > product.stock_quantity:
+            return (
+                f"Недостатньо товару «{product.name}» на складі. "
+                f"Доступно: {product.stock_quantity}"
+            )
+
+    return None
+
+
+def replace_sale_items(sale, new_items):
+    """Допоміжна функція: списує товари зі складу, замінює позиції продажу на нові й повертає нову суму."""
+    for product_id, quantity in new_items.items():
+        product = Product.query.get(product_id)
+        product.stock_quantity -= quantity
+
+    SaleItem.query.filter_by(sale_id=sale.id).delete()
+    db.session.flush()
+
+    total_amount = 0
+    for product_id, quantity in new_items.items():
+        product = Product.query.get(product_id)
+        total_price = float(product.price) * quantity
+
+        db.session.add(SaleItem(
+            sale_id=sale.id,
+            product_id=product_id,
+            quantity=quantity,
+            unit_price=product.price,
+            total_price=total_price
+        ))
+
+        total_amount += total_price
+
+    return total_amount
+
+
 @app.route('/sales/edit/<int:sale_id>', methods=['GET', 'POST'])
 @requires_operator_or_admin
 def edit_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
     employee = sale.employee
 
-    products = Product.query.filter_by(
-        department_id=employee.department_id,
-        is_deleted=False
-    ).all()
+    if request.method != 'POST':
+        products = Product.query.filter_by(
+            department_id=employee.department_id,
+            is_deleted=False
+        ).all()
+        return render_template("edit_sale.html", sale=sale, products=products)
 
     old_items = {item.product_id: item.quantity for item in sale.sale_items}
+    new_items = parse_sale_quantities(request.form)
 
-    if request.method == 'POST':
+    if not new_items:
+        flash("Продаж не може бути порожнім. Залиште хоча б один товар.", "danger")
+        return redirect(url_for('edit_sale', sale_id=sale.id))
 
-        new_items = {}
-        for key in request.form:
-            if key.startswith("quantity_"):
-                product_id = int(key.split("_")[1])
-                qty_raw = request.form[key]
+    return_items_to_stock(old_items)
 
-                if not qty_raw:
-                    continue
+    error_message = find_sale_item_error(new_items, employee)
+    if error_message:
+        db.session.rollback()
+        flash(error_message, "danger")
+        return redirect(url_for('edit_sale', sale_id=sale.id))
 
-                try:
-                    qty = int(qty_raw)
-                except:
-                    continue
+    sale.total_amount = replace_sale_items(sale, new_items)
+    db.session.commit()
 
-                if qty > 0:
-                    new_items[product_id] = qty
-
-        if len(new_items) == 0:
-            flash("Продаж не може бути порожнім. Залиште хоча б один товар.", "danger")
-            return redirect(url_for('edit_sale', sale_id=sale.id))
-
-        for pid, old_qty in old_items.items():
-            product = Product.query.get(pid)
-            product.stock_quantity += old_qty
-
-        db.session.flush()
-
-        for pid, qty in new_items.items():
-
-            product = Product.query.get(pid)
-
-            if product.department_id != employee.department_id:
-                db.session.rollback()
-                flash("Товар не належить відділу співробітника.", "danger")
-                return redirect(url_for('edit_sale', sale_id=sale_id))
-
-            if qty > product.stock_quantity:
-                db.session.rollback()
-                flash(
-                    f"Недостатньо товару «{product.name}» на складі. "
-                    f"Доступно: {product.stock_quantity}",
-                    "danger"
-                )
-                return redirect(url_for('edit_sale', sale_id=sale.id))
-
-        for pid, qty in new_items.items():
-            product = Product.query.get(pid)
-            product.stock_quantity -= qty
-
-        SaleItem.query.filter_by(sale_id=sale.id).delete()
-        db.session.flush()
-
-        total_amount = 0
-        for pid, qty in new_items.items():
-            product = Product.query.get(pid)
-            total_price = float(product.price) * qty
-
-            db.session.add(SaleItem(
-                sale_id=sale.id,
-                product_id=pid,
-                quantity=qty,
-                unit_price=product.price,
-                total_price=total_price
-            ))
-
-            total_amount += total_price
-
-        sale.total_amount = total_amount
-        db.session.commit()
-
-        flash("Продаж успішно оновлено.", "success")
-        return redirect(url_for('sales'))
-
-    return render_template("edit_sale.html", sale=sale, products=products)
+    flash("Продаж успішно оновлено.", "success")
+    return redirect(url_for('sales'))
 
 @app.route('/sales/delete/<int:sale_id>')
 @requires_operator_or_admin
