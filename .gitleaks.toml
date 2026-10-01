@@ -1,0 +1,7 @@
+# Конфігурація Gitleaks для проєкту CURSOVA2 (secret scanner).
+# Базові правила Gitleaks (GitHub/AWS/Stripe токени, приватні ключі, generic API keys тощо).
+# Жодних реальних секретів у цьому файлі немає.
+title = "CURSOVA2 Gitleaks config"
+
+[extend]
+useDefault = true

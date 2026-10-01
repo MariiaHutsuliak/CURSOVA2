@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Git pre-commit hook: блокує коміт (код завершення 1), якщо у staged-змінах
+# знайдено секрет. Підключається командою:  git config core.hooksPath scripts/hooks
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks не встановлено. Встановлення (macOS): brew install gitleaks" >&2
+  exit 1
+fi
+
+echo "[pre-commit] Gitleaks: перевірка staged-змін на секрети..."
+gitleaks git --pre-commit --staged --redact --verbose --config .gitleaks.toml
+echo "[pre-commit] Gitleaks: PASS (секретів у staged-змінах немає)"
