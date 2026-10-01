@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 instance/
 .idea/
+.sonar/
+.pytest_cache/

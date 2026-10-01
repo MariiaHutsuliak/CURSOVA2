@@ -7,9 +7,16 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_moment import Moment
 from functools import wraps
 from history_utils import add_history_entry, load_history
+from fault_injection import maybe_inject_fault
+from resilience import retry_with_backoff, DependencyUnavailableError
+import logging
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -1262,12 +1269,37 @@ def api_query6():
     category_name = request.args.get('category')
     supplier_name = request.args.get('supplier')
 
-    sales_info = BookstoreQueries.query_6_sales_info(
-        target_date=target_date,
-        month=month,
-        category_name=category_name,
-        supplier_name=supplier_name
-    )
+    # Лаб.2, Завдання 2: звернення до БД обгорнуте в Retry (обмежена кількість
+    # спроб + backoff). Точка симуляції відмови (maybe_inject_fault) винесена
+    # всередину функції, що ретраїться, щоб кожна спроба реально
+    # "натикалась" на симульовану відмову — так само, як натикалась би на
+    # реальну тимчасову недоступність БД.
+    @retry_with_backoff(max_attempts=3, base_delay_seconds=0.3)
+    def fetch_query6_data():
+        maybe_inject_fault()
+        return BookstoreQueries.query_6_sales_info(
+            target_date=target_date,
+            month=month,
+            category_name=category_name,
+            supplier_name=supplier_name
+        )
+
+    try:
+        sales_info = fetch_query6_data()
+    except DependencyUnavailableError as e:
+        # Fallback: контрольована деградована відповідь замість краху.
+        logger.error(f"[FALLBACK] /api/query6 повертає деградовану відповідь: {e}")
+        return jsonify({
+            "degraded": True,
+            "message": "Сервіс тимчасово недоступний. Спробуйте, будь ласка, пізніше.",
+            "filters": {
+                "target_date": request.args.get('target_date'),
+                "month": month,
+                "category": category_name,
+                "supplier": supplier_name
+            },
+            "sales": []
+        }), 503
 
     result = []
     for sale, sale_item, product, category in sales_info:
@@ -1304,7 +1336,6 @@ def api_query6():
         },
         "sales": result
     })
-
 @app.route('/api/query7')
 @requires_authorized_or_above
 def api_query7():
