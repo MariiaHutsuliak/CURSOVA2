@@ -87,7 +87,7 @@ class UserRequest(db.Model):
         return f'<UserRequest {self.full_name} - {self.status}>'
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password, method="pbkdf2:sha256")
 
 class Department(db.Model):
     __tablename__ = 'departments'

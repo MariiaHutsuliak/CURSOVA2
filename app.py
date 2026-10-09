@@ -9,12 +9,17 @@ from functools import wraps
 from history_utils import add_history_entry, load_history
 from fault_injection import maybe_inject_fault
 from resilience import retry_with_backoff, DependencyUnavailableError
+from privacy.secure_logging import configure_secure_logging, log_security_event
+from privacy.export import personal_data_response
+from privacy.erasure import anonymize_response
+from privacy.consent import (
+    consent_command_response, consents_list_response, marketing_email_response, analytics_event_response,
+)
 import logging
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
@@ -26,6 +31,8 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_recycle': int(os.getenv('POOL_RECYCLE', 300)),
 }
 
+# Lab 4: єдиний механізм безпечного логування (маскування PII, редагування секретів).
+configure_secure_logging(app)
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -74,13 +81,17 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if not user:
+            log_security_event("login", "failure", reason="unknown_user")
             flash("Користувача з таким логіном не існує.", "danger")
         elif not user.check_password(password):
+            log_security_event("login", "failure", subject_id=user.id, reason="invalid_password")
             flash("Невірний пароль.", "danger")
         elif not user.is_active():
+            log_security_event("login", "failure", subject_id=user.id, reason="account_blocked")
             flash("Ваш обліковий запис заблоковано. Зверніться до адміністратора.", "danger")
         else:
             login_user(user)
+            log_security_event("login", "success", actor_id=user.id, subject_id=user.id)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('index'))
 
@@ -112,6 +123,9 @@ def register_request():
             user_request.set_password(password)
             db.session.add(user_request)
             db.session.commit()
+            # Діагностика: email/телефон потрапляють у журнал лише у замаскованому вигляді.
+            logger.info("Registration request received: email=%s, phone=%s", email, phone)
+            log_security_event("registration_request", "received", subject_id=user_request.id)
             flash('Ваш запит на реєстрацію надіслано адміністратору.', 'success')
             return redirect(url_for('index'))
 
@@ -1501,6 +1515,46 @@ def api_query10():
         'start_date': result['start_date'],
         'end_date': result['end_date']
     })
+
+@app.route('/api/users/<int:user_id>/personal-data', methods=['GET'])
+def api_personal_data(user_id):
+    """Lab 4, Завдання 2: Right of Access. Авторизацію виконує privacy.export, а не path parameter."""
+    return personal_data_response(current_user, user_id)
+
+
+@app.route('/api/users/<int:user_id>/anonymize', methods=['POST'])
+def api_anonymize_user(user_id):
+    """Lab 4, Завдання 3: Right to Erasure. Лише POST, лише авторизований actor, тіло {"confirm": true}."""
+    return anonymize_response(current_user, user_id)
+
+
+@app.route('/api/users/<int:user_id>/consents', methods=['GET'])
+def api_consents(user_id):
+    """Lab 4, Завдання 4: поточні згоди та їх історія."""
+    return consents_list_response(current_user, user_id)
+
+
+@app.route('/api/users/<int:user_id>/consents/<purpose>/grant', methods=['POST'])
+def api_consent_grant(user_id, purpose):
+    return consent_command_response(current_user, user_id, purpose, 'grant')
+
+
+@app.route('/api/users/<int:user_id>/consents/<purpose>/revoke', methods=['POST'])
+def api_consent_revoke(user_id, purpose):
+    return consent_command_response(current_user, user_id, purpose, 'revoke')
+
+
+@app.route('/api/users/<int:user_id>/marketing-email', methods=['POST'])
+def api_marketing_email(user_id):
+    """Залежна дія: маркетингова розсилка проходить через Consent Policy Gate."""
+    return marketing_email_response(current_user, user_id)
+
+
+@app.route('/api/users/<int:user_id>/analytics-event', methods=['POST'])
+def api_analytics_event(user_id):
+    """Залежна дія: необов'язкова аналітика проходить через Consent Policy Gate."""
+    return analytics_event_response(current_user, user_id)
+
 
 @app.route('/my_history')
 @requires_authorized_or_above
