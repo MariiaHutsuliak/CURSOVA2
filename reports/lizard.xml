@@ -1,0 +1,1231 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="https://raw.githubusercontent.com/terryyin/lizard/master/lizard.xsl"?>
+<cppncss>
+	<measure type="Function">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+		</labels>
+		<item name="load_user(...) at app.py:44">
+			<value>1</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="requires_role.requires_role.decorator.decorated_function(...) at app.py:50">
+			<value>2</value>
+			<value>7</value>
+			<value>4</value>
+		</item>
+		<item name="requires_role.decorator(...) at app.py:48">
+			<value>3</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="requires_role(...) at app.py:47">
+			<value>4</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="requires_admin(...) at app.py:60">
+			<value>5</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="requires_operator_or_admin(...) at app.py:63">
+			<value>6</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="requires_authorized_or_above(...) at app.py:66">
+			<value>7</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="requires_any_auth(...) at app.py:69">
+			<value>8</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="login(...) at app.py:73">
+			<value>9</value>
+			<value>22</value>
+			<value>7</value>
+		</item>
+		<item name="logout(...) at app.py:102">
+			<value>10</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="register_request(...) at app.py:107">
+			<value>11</value>
+			<value>22</value>
+			<value>5</value>
+		</item>
+		<item name="user_requests(...) at app.py:136">
+			<value>12</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="approve_request(...) at app.py:142">
+			<value>13</value>
+			<value>18</value>
+			<value>2</value>
+		</item>
+		<item name="reject_request(...) at app.py:169">
+			<value>14</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="admin_users(...) at app.py:187">
+			<value>15</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="toggle_user(...) at app.py:193">
+			<value>16</value>
+			<value>12</value>
+			<value>3</value>
+		</item>
+		<item name="create_operator(...) at app.py:212">
+			<value>17</value>
+			<value>21</value>
+			<value>6</value>
+		</item>
+		<item name="index(...) at app.py:237">
+			<value>18</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="employees(...) at app.py:242">
+			<value>19</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="suppliers(...) at app.py:251">
+			<value>20</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="products(...) at app.py:257">
+			<value>21</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="add_product(...) at app.py:264">
+			<value>22</value>
+			<value>49</value>
+			<value>10</value>
+		</item>
+		<item name="edit_product(...) at app.py:324">
+			<value>23</value>
+			<value>38</value>
+			<value>7</value>
+		</item>
+		<item name="delete_product(...) at app.py:374">
+			<value>24</value>
+			<value>12</value>
+			<value>4</value>
+		</item>
+		<item name="sales(...) at app.py:392">
+			<value>25</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="get_employees_and_products_for_sale(...) at app.py:398">
+			<value>26</value>
+			<value>10</value>
+			<value>2</value>
+		</item>
+		<item name="create_pending_sale(...) at app.py:413">
+			<value>27</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<item name="add_sale(...) at app.py:428">
+			<value>28</value>
+			<value>60</value>
+			<value>11</value>
+		</item>
+		<item name="parse_sale_quantities(...) at app.py:510">
+			<value>29</value>
+			<value>10</value>
+			<value>4</value>
+		</item>
+		<item name="parse_positive_int(...) at app.py:527">
+			<value>30</value>
+			<value>6</value>
+			<value>3</value>
+		</item>
+		<item name="return_items_to_stock(...) at app.py:537">
+			<value>31</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="find_sale_item_error(...) at app.py:546">
+			<value>32</value>
+			<value>11</value>
+			<value>4</value>
+		</item>
+		<item name="replace_sale_items(...) at app.py:563">
+			<value>33</value>
+			<value>19</value>
+			<value>3</value>
+		</item>
+		<item name="edit_sale(...) at app.py:592">
+			<value>34</value>
+			<value>24</value>
+			<value>5</value>
+		</item>
+		<item name="delete_sale(...) at app.py:626">
+			<value>35</value>
+			<value>10</value>
+			<value>2</value>
+		</item>
+		<item name="add_employee(...) at app.py:642">
+			<value>36</value>
+			<value>25</value>
+			<value>6</value>
+		</item>
+		<item name="edit_employee(...) at app.py:672">
+			<value>37</value>
+			<value>15</value>
+			<value>2</value>
+		</item>
+		<item name="delete_employee(...) at app.py:693">
+			<value>38</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="add_schedule(...) at app.py:704">
+			<value>39</value>
+			<value>20</value>
+			<value>2</value>
+		</item>
+		<item name="edit_schedule(...) at app.py:732">
+			<value>40</value>
+			<value>14</value>
+			<value>2</value>
+		</item>
+		<item name="delete_schedule(...) at app.py:752">
+			<value>41</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="add_supplier(...) at app.py:764">
+			<value>42</value>
+			<value>20</value>
+			<value>3</value>
+		</item>
+		<item name="edit_supplier(...) at app.py:789">
+			<value>43</value>
+			<value>12</value>
+			<value>2</value>
+		</item>
+		<item name="delete_supplier(...) at app.py:808">
+			<value>44</value>
+			<value>14</value>
+			<value>4</value>
+		</item>
+		<item name="add_contract(...) at app.py:831">
+			<value>45</value>
+			<value>14</value>
+			<value>2</value>
+		</item>
+		<item name="edit_contract(...) at app.py:851">
+			<value>46</value>
+			<value>13</value>
+			<value>3</value>
+		</item>
+		<item name="delete_contract(...) at app.py:872">
+			<value>47</value>
+			<value>9</value>
+			<value>2</value>
+		</item>
+		<item name="add_contract_product(...) at app.py:887">
+			<value>48</value>
+			<value>14</value>
+			<value>1</value>
+		</item>
+		<item name="delete_contract_product(...) at app.py:907">
+			<value>49</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="deliveries(...) at app.py:918">
+			<value>50</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="get_contracts_and_products_for_delivery(...) at app.py:923">
+			<value>51</value>
+			<value>15</value>
+			<value>3</value>
+		</item>
+		<item name="create_pending_delivery(...) at app.py:944">
+			<value>52</value>
+			<value>9</value>
+			<value>1</value>
+		</item>
+		<item name="add_delivery(...) at app.py:958">
+			<value>53</value>
+			<value>44</value>
+			<value>7</value>
+		</item>
+		<item name="edit_delivery(...) at app.py:1021">
+			<value>54</value>
+			<value>35</value>
+			<value>9</value>
+		</item>
+		<item name="delete_delivery(...) at app.py:1072">
+			<value>55</value>
+			<value>10</value>
+			<value>2</value>
+		</item>
+		<item name="reports(...) at app.py:1088">
+			<value>56</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<item name="api_custom_sql(...) at app.py:1101">
+			<value>57</value>
+			<value>25</value>
+			<value>6</value>
+		</item>
+		<item name="parse_date(...) at app.py:1134">
+			<value>58</value>
+			<value>7</value>
+			<value>4</value>
+		</item>
+		<item name="api_query1(...) at app.py:1145">
+			<value>59</value>
+			<value>32</value>
+			<value>5</value>
+		</item>
+		<item name="api_query2(...) at app.py:1185">
+			<value>60</value>
+			<value>23</value>
+			<value>7</value>
+		</item>
+		<item name="api_query3(...) at app.py:1214">
+			<value>61</value>
+			<value>19</value>
+			<value>2</value>
+		</item>
+		<item name="api_query4(...) at app.py:1241">
+			<value>62</value>
+			<value>19</value>
+			<value>2</value>
+		</item>
+		<item name="api_query5(...) at app.py:1267">
+			<value>63</value>
+			<value>28</value>
+			<value>4</value>
+		</item>
+		<item name="api_query6.fetch_query6_data(...) at app.py:1316">
+			<value>64</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="api_query6(...) at app.py:1303">
+			<value>65</value>
+			<value>56</value>
+			<value>9</value>
+		</item>
+		<item name="api_query7(...) at app.py:1379">
+			<value>66</value>
+			<value>32</value>
+			<value>7</value>
+		</item>
+		<item name="api_query8(...) at app.py:1419">
+			<value>67</value>
+			<value>36</value>
+			<value>3</value>
+		</item>
+		<item name="api_query9(...) at app.py:1465">
+			<value>68</value>
+			<value>18</value>
+			<value>4</value>
+		</item>
+		<item name="api_query10(...) at app.py:1490">
+			<value>69</value>
+			<value>23</value>
+			<value>3</value>
+		</item>
+		<item name="api_personal_data(...) at app.py:1520">
+			<value>70</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_anonymize_user(...) at app.py:1526">
+			<value>71</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_consents(...) at app.py:1532">
+			<value>72</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_consent_grant(...) at app.py:1538">
+			<value>73</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_consent_revoke(...) at app.py:1543">
+			<value>74</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_marketing_email(...) at app.py:1548">
+			<value>75</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="api_analytics_event(...) at app.py:1554">
+			<value>76</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="my_history(...) at app.py:1561">
+			<value>77</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="add_sale_duplicate_test(...) at app.py:1568">
+			<value>78</value>
+			<value>15</value>
+			<value>3</value>
+		</item>
+		<item name="add_delivery_duplicate_test(...) at app.py:1590">
+			<value>79</value>
+			<value>16</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="14.063291139240507"/>
+		<average label="CCN" value="2.8987341772151898"/>
+		<item name="is_active(...) at models.py:20">
+			<value>80</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="set_password(...) at models.py:23">
+			<value>81</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="check_password(...) at models.py:26">
+			<value>82</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_guest(...) at models.py:29">
+			<value>83</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_authorized_user(...) at models.py:32">
+			<value>84</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_operator(...) at models.py:35">
+			<value>85</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_administrator(...) at models.py:38">
+			<value>86</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_view_products(...) at models.py:41">
+			<value>87</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_send_requests(...) at models.py:44">
+			<value>88</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="can_run_queries(...) at models.py:47">
+			<value>89</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_create_queries(...) at models.py:50">
+			<value>90</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_manage_employees(...) at models.py:53">
+			<value>91</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_manage_suppliers(...) at models.py:56">
+			<value>92</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_manage_products(...) at models.py:59">
+			<value>93</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_manage_users(...) at models.py:62">
+			<value>94</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="can_manage_requests(...) at models.py:65">
+			<value>95</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:68">
+			<value>96</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:86">
+			<value>97</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="set_password(...) at models.py:89">
+			<value>98</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:102">
+			<value>99</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="full_name(...) at models.py:123">
+			<value>100</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_manager(...) at models.py:127">
+			<value>101</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="is_deletable(...) at models.py:130">
+			<value>102</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:133">
+			<value>103</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:149">
+			<value>104</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:166">
+			<value>105</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:178">
+			<value>106</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:201">
+			<value>107</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:213">
+			<value>108</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:226">
+			<value>109</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:239">
+			<value>110</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:252">
+			<value>111</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:266">
+			<value>112</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="__repr__(...) at models.py:279">
+			<value>113</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="10.43362831858407"/>
+		<average label="CCN" value="2.336283185840708"/>
+		<item name="query_1_employees_info(...) at queries.py:9">
+			<value>114</value>
+			<value>9</value>
+			<value>4</value>
+		</item>
+		<item name="query_2_revenue_analysis(...) at queries.py:24">
+			<value>115</value>
+			<value>18</value>
+			<value>5</value>
+		</item>
+		<item name="query_3_contracts_by_period(...) at queries.py:48">
+			<value>116</value>
+			<value>19</value>
+			<value>5</value>
+		</item>
+		<item name="query_4_suppliers_without_board_games(...) at queries.py:75">
+			<value>117</value>
+			<value>15</value>
+			<value>2</value>
+		</item>
+		<item name="query_5_top_sellers(...) at queries.py:96">
+			<value>118</value>
+			<value>21</value>
+			<value>6</value>
+		</item>
+		<item name="query_6_sales_info(...) at queries.py:123">
+			<value>119</value>
+			<value>21</value>
+			<value>5</value>
+		</item>
+		<item name="query_7_employee_count(...) at queries.py:151">
+			<value>120</value>
+			<value>17</value>
+			<value>3</value>
+		</item>
+		<item name="query_8_supplier_by_contract(...) at queries.py:174">
+			<value>121</value>
+			<value>5</value>
+			<value>1</value>
+		</item>
+		<item name="query_9_supplier_product_value(...) at queries.py:182">
+			<value>122</value>
+			<value>13</value>
+			<value>3</value>
+		</item>
+		<item name="query_10_weekly_sales_analysis(...) at queries.py:199">
+			<value>123</value>
+			<value>32</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="10.967479674796747"/>
+		<average label="CCN" value="2.4471544715447155"/>
+		<item name="_show(...) at privacy/demo_erasure_repeat.py:16">
+			<value>124</value>
+			<value>6</value>
+			<value>4</value>
+		</item>
+		<item name="_state(...) at privacy/demo_erasure_repeat.py:24">
+			<value>125</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="main(...) at privacy/demo_erasure_repeat.py:30">
+			<value>126</value>
+			<value>33</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="11.047619047619047"/>
+		<average label="CCN" value="2.4444444444444446"/>
+		<item name="mask_email(...) at privacy/sanitizer.py:49">
+			<value>127</value>
+			<value>5</value>
+			<value>3</value>
+		</item>
+		<item name="mask_phone(...) at privacy/sanitizer.py:57">
+			<value>128</value>
+			<value>8</value>
+			<value>4</value>
+		</item>
+		<item name="mask_name(...) at privacy/sanitizer.py:68">
+			<value>129</value>
+			<value>5</value>
+			<value>5</value>
+		</item>
+		<item name="is_forbidden_key(...) at privacy/sanitizer.py:90">
+			<value>130</value>
+			<value>3</value>
+			<value>2</value>
+		</item>
+		<item name="register_secret(...) at privacy/sanitizer.py:141">
+			<value>131</value>
+			<value>3</value>
+			<value>3</value>
+		</item>
+		<item name="clear_registered_secrets(...) at privacy/sanitizer.py:147">
+			<value>132</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="_phone_replacer(...) at privacy/sanitizer.py:151">
+			<value>133</value>
+			<value>11</value>
+			<value>7</value>
+		</item>
+		<item name="_secret_kv_replacer(...) at privacy/sanitizer.py:164">
+			<value>134</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="_name_kv_replacer(...) at privacy/sanitizer.py:172">
+			<value>135</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="sanitize_text(...) at privacy/sanitizer.py:184">
+			<value>136</value>
+			<value>16</value>
+			<value>6</value>
+		</item>
+		<item name="sanitize_value(...) at privacy/sanitizer.py:209">
+			<value>137</value>
+			<value>23</value>
+			<value>22</value>
+		</item>
+		<average label="NCSS" value="10.802919708029197"/>
+		<average label="CCN" value="2.664233576642336"/>
+		<item name="__repr__(...) at privacy/audit.py:33">
+			<value>138</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="record_audit_event(...) at privacy/audit.py:37">
+			<value>139</value>
+			<value>12</value>
+			<value>5</value>
+		</item>
+		<average label="NCSS" value="10.748201438848922"/>
+		<average label="CCN" value="2.6690647482014387"/>
+		<item name="_make_logger(...) at privacy/demo_logging.py:39">
+			<value>140</value>
+			<value>12</value>
+			<value>2</value>
+		</item>
+		<item name="_scenarios(...) at privacy/demo_logging.py:53">
+			<value>141</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<item name="main(...) at privacy/demo_logging.py:76">
+			<value>142</value>
+			<value>13</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="10.788732394366198"/>
+		<average label="CCN" value="2.647887323943662"/>
+		<average label="NCSS" value="10.788732394366198"/>
+		<average label="CCN" value="2.647887323943662"/>
+		<item name="authorize_export(...) at privacy/export.py:59">
+			<value>143</value>
+			<value>11</value>
+			<value>6</value>
+		</item>
+		<item name="_iso_utc(...) at privacy/export.py:77">
+			<value>144</value>
+			<value>6</value>
+			<value>3</value>
+		</item>
+		<item name="_section(...) at privacy/export.py:86">
+			<value>145</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="_collect_profile(...) at privacy/export.py:94">
+			<value>146</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<item name="_collect_settings(...) at privacy/export.py:103">
+			<value>147</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="_collect_activity.add(...) at privacy/export.py:113">
+			<value>148</value>
+			<value>15</value>
+			<value>3</value>
+		</item>
+		<item name="_collect_activity(...) at privacy/export.py:108">
+			<value>149</value>
+			<value>15</value>
+			<value>5</value>
+		</item>
+		<item name="_collect_registration_requests(...) at privacy/export.py:143">
+			<value>150</value>
+			<value>15</value>
+			<value>3</value>
+		</item>
+		<item name="_collect_consents(...) at privacy/export.py:161">
+			<value>151</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="build_personal_data_export(...) at privacy/export.py:168">
+			<value>152</value>
+			<value>27</value>
+			<value>3</value>
+		</item>
+		<item name="handle_export_request(...) at privacy/export.py:202">
+			<value>153</value>
+			<value>19</value>
+			<value>5</value>
+		</item>
+		<item name="personal_data_response(...) at privacy/export.py:228">
+			<value>154</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="10.824675324675324"/>
+		<average label="CCN" value="2.6623376623376624"/>
+		<item name="_extra_fields(...) at privacy/secure_logging.py:41">
+			<value>155</value>
+			<value>2</value>
+			<value>3</value>
+		</item>
+		<item name="_current_correlation_id(...) at privacy/secure_logging.py:45">
+			<value>156</value>
+			<value>8</value>
+			<value>3</value>
+		</item>
+		<item name="filter(...) at privacy/secure_logging.py:65">
+			<value>157</value>
+			<value>4</value>
+			<value>2</value>
+		</item>
+		<item name="filter(...) at privacy/secure_logging.py:74">
+			<value>158</value>
+			<value>19</value>
+			<value>8</value>
+		</item>
+		<item name="__init__(...) at privacy/secure_logging.py:107">
+			<value>159</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="format(...) at privacy/secure_logging.py:110">
+			<value>160</value>
+			<value>12</value>
+			<value>5</value>
+		</item>
+		<item name="format(...) at privacy/secure_logging.py:130">
+			<value>161</value>
+			<value>18</value>
+			<value>8</value>
+		</item>
+		<item name="secure_handler(...) at privacy/secure_logging.py:154">
+			<value>162</value>
+			<value>6</value>
+			<value>3</value>
+		</item>
+		<item name="configure_secure_logging._start_request(...) at privacy/secure_logging.py:198">
+			<value>163</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="configure_secure_logging._finish_request(...) at privacy/secure_logging.py:205">
+			<value>164</value>
+			<value>12</value>
+			<value>2</value>
+		</item>
+		<item name="configure_secure_logging(...) at privacy/secure_logging.py:163">
+			<value>165</value>
+			<value>23</value>
+			<value>6</value>
+		</item>
+		<item name="log_security_event(...) at privacy/secure_logging.py:227">
+			<value>166</value>
+			<value>7</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="10.75301204819277"/>
+		<average label="CCN" value="2.7349397590361444"/>
+		<item name="_read_state(...) at privacy/demo_erasure.py:28">
+			<value>167</value>
+			<value>4</value>
+			<value>2</value>
+		</item>
+		<item name="setup(...) at privacy/demo_erasure.py:34">
+			<value>168</value>
+			<value>33</value>
+			<value>3</value>
+		</item>
+		<item name="show(...) at privacy/demo_erasure.py:71">
+			<value>169</value>
+			<value>31</value>
+			<value>8</value>
+		</item>
+		<item name="cleanup(...) at privacy/demo_erasure.py:107">
+			<value>170</value>
+			<value>13</value>
+			<value>2</value>
+		</item>
+		<average label="NCSS" value="10.976470588235294"/>
+		<average label="CCN" value="2.7588235294117647"/>
+		<item name="_short(...) at privacy/demo_consent.py:25">
+			<value>171</value>
+			<value>7</value>
+			<value>6</value>
+		</item>
+		<item name="_outbox(...) at privacy/demo_consent.py:34">
+			<value>172</value>
+			<value>8</value>
+			<value>3</value>
+		</item>
+		<item name="main.login(...) at privacy/demo_consent.py:59">
+			<value>173</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="main(...) at privacy/demo_consent.py:44">
+			<value>174</value>
+			<value>63</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="11.195402298850574"/>
+		<average label="CCN" value="2.7701149425287355"/>
+		<item name="_is_anonymized(...) at privacy/erasure.py:87">
+			<value>175</value>
+			<value>4</value>
+			<value>3</value>
+		</item>
+		<item name="_anonymize_user_row(...) at privacy/erasure.py:93">
+			<value>176</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="_anonymize_requests(...) at privacy/erasure.py:101">
+			<value>177</value>
+			<value>9</value>
+			<value>2</value>
+		</item>
+		<item name="_delete_history_file(...) at privacy/erasure.py:113">
+			<value>178</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="anonymize_user(...) at privacy/erasure.py:122">
+			<value>179</value>
+			<value>33</value>
+			<value>8</value>
+		</item>
+		<item name="handle_anonymize_request(...) at privacy/erasure.py:172">
+			<value>180</value>
+			<value>31</value>
+			<value>8</value>
+		</item>
+		<item name="anonymize_response(...) at privacy/erasure.py:210">
+			<value>181</value>
+			<value>10</value>
+			<value>3</value>
+		</item>
+		<average label="NCSS" value="11.30939226519337"/>
+		<average label="CCN" value="2.8066298342541436"/>
+		<item name="__init__(...) at privacy/consent.py:110">
+			<value>182</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="__init__(...) at privacy/consent.py:123">
+			<value>183</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="check(...) at privacy/consent.py:135">
+			<value>184</value>
+			<value>14</value>
+			<value>6</value>
+		</item>
+		<item name="require(...) at privacy/consent.py:150">
+			<value>185</value>
+			<value>5</value>
+			<value>2</value>
+		</item>
+		<item name="_validate(...) at privacy/consent.py:164">
+			<value>186</value>
+			<value>5</value>
+			<value>4</value>
+		</item>
+		<item name="_locked_row(...) at privacy/consent.py:171">
+			<value>187</value>
+			<value>3</value>
+			<value>1</value>
+		</item>
+		<item name="serialize_consent(...) at privacy/consent.py:176">
+			<value>188</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<item name="grant_consent(...) at privacy/consent.py:188">
+			<value>189</value>
+			<value>34</value>
+			<value>10</value>
+		</item>
+		<item name="_withdraw_row(...) at privacy/consent.py:226">
+			<value>190</value>
+			<value>8</value>
+			<value>1</value>
+		</item>
+		<item name="revoke_consent(...) at privacy/consent.py:236">
+			<value>191</value>
+			<value>12</value>
+			<value>4</value>
+		</item>
+		<item name="revoke_all_consents(...) at privacy/consent.py:250">
+			<value>192</value>
+			<value>7</value>
+			<value>2</value>
+		</item>
+		<item name="export_consents(...) at privacy/consent.py:260">
+			<value>193</value>
+			<value>12</value>
+			<value>3</value>
+		</item>
+		<item name="queue_marketing_email(...) at privacy/consent.py:278">
+			<value>194</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="record_analytics_event(...) at privacy/consent.py:291">
+			<value>195</value>
+			<value>11</value>
+			<value>2</value>
+		</item>
+		<item name="dispatch_pending_messages(...) at privacy/consent.py:304">
+			<value>196</value>
+			<value>11</value>
+			<value>4</value>
+		</item>
+		<item name="_actor_id(...) at privacy/consent.py:325">
+			<value>197</value>
+			<value>2</value>
+			<value>2</value>
+		</item>
+		<item name="_auth_error(...) at privacy/consent.py:329">
+			<value>198</value>
+			<value>7</value>
+			<value>2</value>
+		</item>
+		<item name="handle_consent_command(...) at privacy/consent.py:338">
+			<value>199</value>
+			<value>33</value>
+			<value>11</value>
+		</item>
+		<item name="handle_consents_list(...) at privacy/consent.py:376">
+			<value>200</value>
+			<value>9</value>
+			<value>3</value>
+		</item>
+		<item name="_consent_required(...) at privacy/consent.py:387">
+			<value>201</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="handle_marketing_email(...) at privacy/consent.py:393">
+			<value>202</value>
+			<value>17</value>
+			<value>5</value>
+		</item>
+		<item name="handle_analytics_event(...) at privacy/consent.py:412">
+			<value>203</value>
+			<value>11</value>
+			<value>3</value>
+		</item>
+		<item name="_respond(...) at privacy/consent.py:425">
+			<value>204</value>
+			<value>6</value>
+			<value>1</value>
+		</item>
+		<item name="consent_command_response(...) at privacy/consent.py:434">
+			<value>205</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="consents_list_response(...) at privacy/consent.py:441">
+			<value>206</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="marketing_email_response(...) at privacy/consent.py:445">
+			<value>207</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="analytics_event_response(...) at privacy/consent.py:449">
+			<value>208</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="11.033653846153847"/>
+		<average label="CCN" value="2.8076923076923075"/>
+		<item name="retry_with_backoff.retry_with_backoff.decorator.wrapper(...) at resilience.py:40">
+			<value>209</value>
+			<value>24</value>
+			<value>5</value>
+		</item>
+		<item name="retry_with_backoff.decorator(...) at resilience.py:38">
+			<value>210</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="retry_with_backoff(...) at resilience.py:36">
+			<value>211</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="11.028436018957345"/>
+		<average label="CCN" value="2.800947867298578"/>
+		<item name="history_file(...) at history_utils.py:16">
+			<value>212</value>
+			<value>2</value>
+			<value>1</value>
+		</item>
+		<item name="load_history(...) at history_utils.py:19">
+			<value>213</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="save_history(...) at history_utils.py:26">
+			<value>214</value>
+			<value>4</value>
+			<value>1</value>
+		</item>
+		<item name="add_history_entry(...) at history_utils.py:31">
+			<value>215</value>
+			<value>10</value>
+			<value>1</value>
+		</item>
+		<average label="NCSS" value="10.925581395348837"/>
+		<average label="CCN" value="2.772093023255814"/>
+	</measure>
+	<measure type="File">
+		<labels>
+			<label>Nr.</label>
+			<label>NCSS</label>
+			<label>CCN</label>
+			<label>Functions</label>
+		</labels>
+		<item name="app.py">
+			<value>1</value>
+			<value>1256</value>
+			<value>229</value>
+			<value>79</value>
+		</item>
+		<item name="models.py">
+			<value>2</value>
+			<value>206</value>
+			<value>35</value>
+			<value>34</value>
+		</item>
+		<item name="queries.py">
+			<value>3</value>
+			<value>185</value>
+			<value>37</value>
+			<value>10</value>
+		</item>
+		<item name="privacy/demo_erasure_repeat.py">
+			<value>4</value>
+			<value>51</value>
+			<value>7</value>
+			<value>3</value>
+		</item>
+		<item name="privacy/sanitizer.py">
+			<value>5</value>
+			<value>131</value>
+			<value>57</value>
+			<value>11</value>
+		</item>
+		<item name="privacy/audit.py">
+			<value>6</value>
+			<value>30</value>
+			<value>6</value>
+			<value>2</value>
+		</item>
+		<item name="privacy/demo_logging.py">
+			<value>7</value>
+			<value>60</value>
+			<value>5</value>
+			<value>3</value>
+		</item>
+		<item name="privacy/__init__.py">
+			<value>8</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+		</item>
+		<item name="privacy/export.py">
+			<value>9</value>
+			<value>153</value>
+			<value>34</value>
+			<value>12</value>
+		</item>
+		<item name="privacy/secure_logging.py">
+			<value>10</value>
+			<value>139</value>
+			<value>44</value>
+			<value>12</value>
+		</item>
+		<item name="privacy/demo_erasure.py">
+			<value>11</value>
+			<value>99</value>
+			<value>15</value>
+			<value>4</value>
+		</item>
+		<item name="privacy/demo_consent.py">
+			<value>12</value>
+			<value>93</value>
+			<value>13</value>
+			<value>4</value>
+		</item>
+		<item name="privacy/erasure.py">
+			<value>13</value>
+			<value>145</value>
+			<value>26</value>
+			<value>7</value>
+		</item>
+		<item name="privacy/consent.py">
+			<value>14</value>
+			<value>312</value>
+			<value>76</value>
+			<value>27</value>
+		</item>
+		<item name="resilience.py">
+			<value>15</value>
+			<value>37</value>
+			<value>7</value>
+			<value>3</value>
+		</item>
+		<item name="history_utils.py">
+			<value>16</value>
+			<value>29</value>
+			<value>5</value>
+			<value>4</value>
+		</item>
+		<average label="NCSS" value="182.875"/>
+		<average label="CCN" value="37.25"/>
+		<average label="Functions" value="13.4375"/>
+		<sum label="NCSS" value="2926"/>
+		<sum label="CCN" value="596"/>
+		<sum label="Functions" value="215"/>
+		<average label="NCSS" value="10.925581395348837"/>
+		<average label="CCN" value="2.772093023255814"/>
+	</measure>
+</cppncss>
+
