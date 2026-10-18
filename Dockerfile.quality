@@ -1,0 +1,10 @@
+# Ізольований раннер для вимірювання метрик якості (ЛР5).
+# Версія Python закріплена, інструменти ставляться з requirements-quality.txt.
+FROM python:3.11.13-slim
+
+WORKDIR /project
+COPY requirements-quality.txt .
+RUN pip install --no-cache-dir -r requirements-quality.txt
+
+# Код проєкту монтується томом (read-only), результати пишуться у /project/reports
+CMD ["bash", "scripts/measure-quality.sh"]

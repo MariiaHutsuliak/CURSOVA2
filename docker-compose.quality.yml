@@ -1,0 +1,14 @@
+# Запуск:  docker compose -f docker-compose.quality.yml run --rm quality
+# Ліміти ресурсів однакові для кожного запуску, тому "шум" сусідніх процесів
+# не впливає на результат вимірювання.
+services:
+  quality:
+    build:
+      context: .
+      dockerfile: Dockerfile.quality
+    cpus: "1.0"          # жорсткий ліміт CPU (аналог docker run --cpus=1)
+    mem_limit: 1g        # жорсткий ліміт RAM (аналог docker run --memory=1g)
+    memswap_limit: 1g    # без swap, щоб нестача RAM не маскувалась
+    volumes:
+      - ./:/project:ro
+      - ./reports:/project/reports:rw
