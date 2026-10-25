@@ -1,0 +1,36 @@
+privacy/consent.py
+    LOC: 450
+    LLOC: 303
+    SLOC: 312
+    Comments: 30
+    Single comments: 22
+    Multi: 23
+    Blank: 93
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 10%
+        (C + M % L): 12%
+queries.py
+    LOC: 236
+    LLOC: 119
+    SLOC: 185
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 51
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+models.py
+    LOC: 280
+    LLOC: 206
+    SLOC: 206
+    Comments: 3
+    Single comments: 2
+    Multi: 0
+    Blank: 72
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 1%

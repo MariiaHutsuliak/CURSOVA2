@@ -1,0 +1,16 @@
+Файлів: 21
+sum h1=116  sum h2=633  eta=749
+N1=412  N2=765  N=1177
+V=11239.0  D=70.09  E=787792.7
+
+ТОП-10 файлів за E:
+app.py                              E=   22383.1
+queries.py                          E=    9877.2
+privacy/sanitizer.py                E=    6251.1
+privacy/consent.py                  E=    3236.3
+privacy/secure_logging.py           E=    1759.0
+privacy/erasure.py                  E=     790.3
+privacy/export.py                   E=     719.6
+init_db.py                          E=     700.5
+privacy/demo_erasure.py             E=     666.3
+seed_bulk_sales.py                  E=     559.8
