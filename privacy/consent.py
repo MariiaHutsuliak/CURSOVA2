@@ -335,52 +335,122 @@ def _auth_error(decision: str, event: str, principal: Any, subject_id: int):
     return DENY_BODY_FORBIDDEN, 403
 
 
-def handle_consent_command(principal: Any, subject_id: int, purpose: str, action: str, payload: Any):
-    """action: 'grant' | 'revoke'. Лише сам суб'єкт: жодна роль не може дати згоду за іншого."""
-    event = f"consent_{action}"
-    decision = authorize_export(principal, subject_id, privileged_roles=frozenset())
-    if decision != "allow":
-        return _auth_error(decision, event, principal, subject_id)
-    if not isinstance(payload, dict):
-        return {"error": "json_body_required"}, 400
-    if purpose not in CURRENT_POLICY_VERSION:
-        return {"error": "unknown_purpose"}, 400
-    source = payload.get("source", DEFAULT_SOURCE)
-    if source not in ALLOWED_SOURCES:
-        return {"error": "invalid_source"}, 400
-    version = payload.get("policy_version")
-    if version is not None and not isinstance(version, str):
-        return {"error": "invalid_policy_version"}, 400
+# --- Data-Driven Refactoring: Lookup Tables замість ланцюга if/else ---
 
-    # --- audit experiment: розширені бізнес-правила (FAIL-стан, CC > 15) ---
-    if action == "grant" and purpose == "marketing" and source == "api":
-        return {"error": "marketing_requires_ui_source"}, 400
-    if payload.get("dry_run"):
-        return {"status": "dry_run", "purpose": purpose}, 200
-    if payload.get("locale") not in (None, "uk", "en"):
-        return {"error": "invalid_locale"}, 400
-    if len(payload) > 5:
-        return {"error": "payload_too_large"}, 400
+def _source(c):
+    return c["payload"].get("source", DEFAULT_SOURCE)
 
-    actor = _actor_id(principal)
+
+def _err(name):
+    return lambda c: {"error": name}
+
+
+def _dry_run_body(c):
+    return {"status": "dry_run", "purpose": c["purpose"]}
+
+
+def _payload_not_dict(c):
+    return not isinstance(c["payload"], dict)
+
+
+def _unknown_purpose(c):
+    return c["purpose"] not in CURRENT_POLICY_VERSION
+
+
+def _invalid_source(c):
+    return _source(c) not in ALLOWED_SOURCES
+
+
+def _invalid_policy_version(c):
+    version = c["payload"].get("policy_version")
+    return version is not None and not isinstance(version, str)
+
+
+def _marketing_grant_via_api(c):
+    return c["action"] == "grant" and c["purpose"] == "marketing" and _source(c) == "api"
+
+
+def _is_dry_run(c):
+    return bool(c["payload"].get("dry_run"))
+
+
+def _invalid_locale(c):
+    return c["payload"].get("locale") not in (None, "uk", "en")
+
+
+def _payload_too_large(c):
+    return len(c["payload"]) > 5
+
+
+# Порядок важливий: перше спрацювання перериває обробку (як ранні return в оригіналі).
+_VALIDATION_RULES = (
+    (_payload_not_dict, _err("json_body_required"), 400),
+    (_unknown_purpose, _err("unknown_purpose"), 400),
+    (_invalid_source, _err("invalid_source"), 400),
+    (_invalid_policy_version, _err("invalid_policy_version"), 400),
+    (_marketing_grant_via_api, _err("marketing_requires_ui_source"), 400),
+    (_is_dry_run, _dry_run_body, 200),
+    (_invalid_locale, _err("invalid_locale"), 400),
+    (_payload_too_large, _err("payload_too_large"), 400),
+)
+
+
+def _run_grant(c):
+    return grant_consent(c["subject_id"], c["purpose"], c["payload"].get("policy_version"), _source(c))
+
+
+def _run_revoke(c):
+    return revoke_consent(c["subject_id"], c["purpose"], _source(c))
+
+
+_COMMAND_HANDLERS = {"grant": _run_grant, "revoke": _run_revoke}
+_CHANGING_STATUSES = frozenset(("granted", "renewed", "revoked"))
+_OUTCOME = {True: "success", False: "noop"}
+
+
+def _authorization_violation(c):
+    decision = authorize_export(c["principal"], c["subject_id"], privileged_roles=frozenset())
+    return None if decision == "allow" else _auth_error(decision, c["event"], c["principal"], c["subject_id"])
+
+
+def _validation_violation(c):
+    for check, body, status in _VALIDATION_RULES:
+        if check(c):
+            return body(c), status
+    return None
+
+
+def _first_violation(c):
+    return _authorization_violation(c) or _validation_violation(c)
+
+
+def _success_response(c, result):
+    outcome = _OUTCOME[result["status"] in _CHANGING_STATUSES]
+    log_security_event(c["event"], outcome, actor_id=c["actor"], subject_id=c["subject_id"],
+                       reason=c["purpose"])
+    return {"status": result["status"], "purpose": c["purpose"], "consent": result["consent"]}, 200
+
+
+def _execute(c):
+    c["actor"] = _actor_id(c["principal"])
     try:
-        if action == "grant":
-            result = grant_consent(subject_id, purpose, version, source)
-        else:
-            result = revoke_consent(subject_id, purpose, source)
+        result = _COMMAND_HANDLERS.get(c["action"], _run_revoke)(c)
     except PolicyVersionMismatch as exc:
-        log_security_event(event, "denied", actor_id=actor, subject_id=subject_id,
+        log_security_event(c["event"], "denied", actor_id=c["actor"], subject_id=c["subject_id"],
                            reason="policy_version_outdated")
         return {"error": "policy_version_outdated", "current_policy_version": exc.current}, 409
     except Exception:
         db.session.rollback()
         logger.error("consent command failed", exc_info=True)
         return {"error": "consent_command_failed"}, 500
+    return _success_response(c, result)
 
-    changed = result["status"] in ("granted", "renewed", "revoked")
-    log_security_event(event, "success" if changed else "noop", actor_id=actor,
-                       subject_id=subject_id, reason=purpose)
-    return {"status": result["status"], "purpose": purpose, "consent": result["consent"]}, 200
+
+def handle_consent_command(principal: Any, subject_id: int, purpose: str, action: str, payload: Any):
+    """action: 'grant' | 'revoke'. Лише сам суб'єкт: жодна роль не може дати згоду за іншого."""
+    ctx = {"principal": principal, "subject_id": subject_id, "purpose": purpose,
+           "action": action, "payload": payload, "event": f"consent_{action}"}
+    return _first_violation(ctx) or _execute(ctx)
 
 
 def handle_consents_list(principal: Any, subject_id: int):
