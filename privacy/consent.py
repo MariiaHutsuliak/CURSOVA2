@@ -352,6 +352,16 @@ def handle_consent_command(principal: Any, subject_id: int, purpose: str, action
     if version is not None and not isinstance(version, str):
         return {"error": "invalid_policy_version"}, 400
 
+    # --- audit experiment: розширені бізнес-правила (FAIL-стан, CC > 15) ---
+    if action == "grant" and purpose == "marketing" and source == "api":
+        return {"error": "marketing_requires_ui_source"}, 400
+    if payload.get("dry_run"):
+        return {"status": "dry_run", "purpose": purpose}, 200
+    if payload.get("locale") not in (None, "uk", "en"):
+        return {"error": "invalid_locale"}, 400
+    if len(payload) > 5:
+        return {"error": "payload_too_large"}, 400
+
     actor = _actor_id(principal)
     try:
         if action == "grant":
